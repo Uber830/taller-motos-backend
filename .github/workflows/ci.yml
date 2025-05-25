@@ -1,0 +1,53 @@
+name: 🔄 Continuous Integration
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    name: 🔍 Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository 📥
+        uses: actions/checkout@v4
+
+      - name: Setup Bun ⚙️
+        uses: ./.github/actions/setup-bun
+
+      - name: Type Check 📝
+        run: bun run validate-typescript
+
+      - name: Lint 🧹
+        run: bun run lint
+
+      - name: Run Tests 🧪
+        run: bun test
+
+  build:
+    name: 🏗️ Build
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository 📥
+        uses: actions/checkout@v4
+
+      - name: Setup Bun ⚙️
+        uses: ./.github/actions/setup-bun
+
+      - name: Install OpenSSL for Prisma 🔒
+        run: sudo apt-get update && sudo apt-get install -y openssl
+
+      - name: Generate Prisma Client 🗄️
+        run: bunx prisma generate
+
+      - name: Build 🏗️
+        run: bun run build
+
+      - name: Upload build artifacts 📦
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: dist/

@@ -1,0 +1,29 @@
+repository:
+  name: taller-motos-backend
+  description: Backend para la aplicación de gestión de taller de motos, construido con Bun.js, Express y TypeScript
+  homepage: github.com/tu-usuario/taller-motos-backend
+  topics: bunjs, typescript, express, prisma, api, taller-motos
+  has_wiki: false
+  private: false
+  has_issues: true
+  has_projects: false
+  default_branch: main
+  allow_squash_merge: true
+  allow_merge_commit: false
+  allow_rebase_merge: false
+  delete_branch_on_merge: true
+  enable_automated_security_fixes: true
+  enable_vulnerability_alerts: true
+branches:
+  - name: main
+    protection:
+      required_pull_request_reviews:
+        required_approving_review_count: 1
+        dismiss_stale_reviews: true
+        require_code_owner_reviews: true
+      required_status_checks:
+        strict: true
+        contexts: []
+      enforce_admins: false
+      required_linear_history: true
+      restrictions: null

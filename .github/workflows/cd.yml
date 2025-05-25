@@ -1,0 +1,40 @@
+name: 🚀 Continuous Deployment
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    name: 🚀 Deploy
+    runs-on: ubuntu-latest
+    needs: []  # Add your CI workflow job here if you want to ensure CI passes before deployment
+    steps:
+      - name: Checkout repository 📥
+        uses: actions/checkout@v4
+
+      - name: Setup Bun ⚙️
+        uses: ./.github/actions/setup-bun
+
+      - name: Install OpenSSL for Prisma 🔒
+        run: sudo apt-get update && sudo apt-get install -y openssl
+
+      - name: Generate Prisma Client 🗄️
+        run: bunx prisma generate
+
+      - name: Build 🏗️
+        run: bun run build
+
+      # Aquí puedes agregar los pasos para desplegar a tu plataforma preferida
+      # Por ejemplo, para Railway:
+      # - name: Deploy to Railway 🚂
+      #   uses: bervProject/railway-deploy@main
+      #   with:
+      #     railway_token: ${{ secrets.RAILWAY_TOKEN }}
+
+      # O para Digital Ocean:
+      # - name: Deploy to Digital Ocean 🌊
+      #   uses: digitalocean/app-action@main
+      #   with:
+      #     token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+      #     app_name: taller-motos-backend

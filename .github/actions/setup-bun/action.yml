@@ -1,0 +1,30 @@
+name: '⚙️ Setup Bun'
+
+description: 'Setup Bun with project version and install dependencies'
+
+inputs:
+  bun_version:
+    description: 'Bun version to use'
+    required: false
+    default: 'latest'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Bun Runtime ⚙️
+      uses: oven-sh/setup-bun@v1
+      with:
+        bun-version: ${{ inputs.bun_version }}
+
+    - name: Cache Dependencies ⌛️
+      uses: actions/cache@v4
+      id: cache-bun-modules
+      with:
+        path: |
+          node_modules
+        key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}-${{ hashFiles('.github/actions/setup-bun/action.yml') }}
+
+    - name: Install dependencies 📥
+      if: steps.cache-bun-modules.outputs.cache-hit != 'true'
+      shell: bash
+      run: bun install --frozen-lockfile
