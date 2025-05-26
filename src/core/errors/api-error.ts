@@ -10,7 +10,7 @@ export class ApiError extends Error {
    * @param {string} message - Error message.
    * @param {boolean} isOperational - Indicates if the error is operational (expected) or a bug.
    */
-  constructor(statusCode: number, message: string, isOperational: boolean = true) {
+  constructor(statusCode: number, message: string, isOperational = true) {
     super(message);
     this.statusCode = statusCode;
     this.isOperational = isOperational;
@@ -23,7 +23,7 @@ export class ApiError extends Error {
  * @description Represents a 400 Bad Request error.
  */
 export class BadRequestError extends ApiError {
-  constructor(message: string = 'Bad Request') {
+  constructor(message = "Bad Request") {
     super(400, message);
   }
 }
@@ -32,7 +32,7 @@ export class BadRequestError extends ApiError {
  * @description Represents a 401 Unauthorized error.
  */
 export class UnauthorizedError extends ApiError {
-  constructor(message: string = 'Unauthorized') {
+  constructor(message = "Unauthorized") {
     super(401, message);
   }
 }
@@ -41,7 +41,7 @@ export class UnauthorizedError extends ApiError {
  * @description Represents a 403 Forbidden error.
  */
 export class ForbiddenError extends ApiError {
-  constructor(message: string = 'Forbidden') {
+  constructor(message = "Forbidden") {
     super(403, message);
   }
 }
@@ -50,7 +50,7 @@ export class ForbiddenError extends ApiError {
  * @description Represents a 404 Not Found error.
  */
 export class NotFoundError extends ApiError {
-  constructor(message: string = 'Not Found') {
+  constructor(message = "Not Found") {
     super(404, message);
   }
 }
@@ -59,7 +59,7 @@ export class NotFoundError extends ApiError {
  * @description Represents a 409 Conflict error.
  */
 export class ConflictError extends ApiError {
-  constructor(message: string = 'Conflict') {
+  constructor(message = "Conflict") {
     super(409, message);
   }
 }
@@ -68,7 +68,7 @@ export class ConflictError extends ApiError {
  * @description Represents a 500 Internal Server Error.
  */
 export class InternalServerError extends ApiError {
-  constructor(message: string = 'Internal Server Error') {
+  constructor(message = "Internal Server Error") {
     super(500, message, false); // Typically non-operational
   }
 }

@@ -1,6 +1,7 @@
-import { PrismaClient } from '@prisma/client';
-import { AssignRoleParams, DeleteUserParams } from '../validators';
-import { AdminDashboardStats } from '../types';
+import { PrismaClient, Role } from "@prisma/client";
+
+import { AdminAction, AdminDashboardStats } from "../types";
+import { AssignRoleParams, DeleteUserParams } from "../validators";
 
 const prisma = new PrismaClient();
 
@@ -19,22 +20,23 @@ export class AdminService {
   }
 
   async getDashboardStats(): Promise<AdminDashboardStats> {
-    const [totalUsers, totalMechanics, totalReceptionists, recentActions] = await Promise.all([
-      prisma.user.count(),
-      prisma.user.count({ where: { role: 'MECHANIC' } }),
-      prisma.user.count({ where: { role: 'RECEPTIONIST' } }),
-      prisma.user.findMany({
-        where: { role: 'ADMIN' },
-        orderBy: { createdAt: 'desc' },
-        take: 10,
-      }),
-    ]);
+    const [totalUsers, totalMechanics, totalOwners, recentActions] =
+      await Promise.all([
+        prisma.user.count(),
+        prisma.user.count({ where: { role: Role.MECHANIC } }),
+        prisma.user.count({ where: { role: Role.OWNER } }),
+        prisma.user.findMany({
+          where: { role: Role.ADMIN },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
+      ]);
 
     return {
       totalUsers,
       totalMechanics,
-      totalReceptionists,
-      recentActions: recentActions.map(user => user.role),
+      totalOwners,
+      recentActions: recentActions.map(() => "UPDATE_USER" as AdminAction),
     };
   }
 }

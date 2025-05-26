@@ -1,9 +1,9 @@
-import { z } from 'zod';
+import { z } from "zod";
 //  import { Role } from '../auth/types';
 
 // export type { Role } from '../auth/types';
 
-export const userRoleSchema = z.enum(['MECHANIC', 'OWNER', 'ADMIN']);
+export const userRoleSchema = z.enum(["MECHANIC", "OWNER", "ADMIN"]);
 
 export const assignRoleSchema = z.object({
   userId: z.string(),

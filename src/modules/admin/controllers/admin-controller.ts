@@ -1,6 +1,7 @@
-import { Request, Response } from 'express';
-import { AdminService } from '../services';
-import { AssignRoleParams, DeleteUserParams } from '../validators';
+import { Request, Response } from "express";
+
+import { AdminService } from "../services";
+import { AssignRoleParams, DeleteUserParams } from "../validators";
 
 export class AdminController {
   private readonly adminService: AdminService;
@@ -13,9 +14,9 @@ export class AdminController {
     try {
       const params = req.body as AssignRoleParams;
       await this.adminService.assignRole(params);
-      res.status(200).json({ message: 'Role assigned successfully' });
-    } catch (error) {
-      res.status(400).json({ error: 'Failed to assign role' });
+      res.status(200).json({ message: "Role assigned successfully" });
+    } catch {
+      res.status(400).json({ error: "Failed to assign role" });
     }
   }
 
@@ -23,9 +24,9 @@ export class AdminController {
     try {
       const params = { userId: req.params.userId } as DeleteUserParams;
       await this.adminService.deleteUser(params);
-      res.status(200).json({ message: 'User deleted successfully' });
-    } catch (error) {
-      res.status(400).json({ error: 'Failed to delete user' });
+      res.status(200).json({ message: "User deleted successfully" });
+    } catch {
+      res.status(400).json({ error: "Failed to delete user" });
     }
   }
 
@@ -33,8 +34,8 @@ export class AdminController {
     try {
       const stats = await this.adminService.getDashboardStats();
       res.status(200).json(stats);
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch dashboard stats' });
+    } catch {
+      res.status(500).json({ error: "Failed to fetch dashboard stats" });
     }
   }
 }

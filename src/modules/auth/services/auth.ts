@@ -1,16 +1,28 @@
-import { Prisma, PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import { User, LoginCredentials, RegisterCredentials, AuthenticatedUser, Role } from '../types/index';
-import { ConflictError, UnauthorizedError, InternalServerError } from '../../../core/errors';
+import { Prisma, PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+
+import {
+  ConflictError,
+  InternalServerError,
+  UnauthorizedError,
+} from "../../../core/errors";
+import {
+  AuthenticatedUser,
+  LoginCredentials,
+  RegisterCredentials,
+  Role,
+  User,
+} from "../types/index";
 
 const prisma = new PrismaClient();
 
 export class AuthService {
-  private static readonly JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
-  private static readonly JWT_EXPIRES_IN = '24h';
+  private static readonly JWT_SECRET =
+    process.env.JWT_SECRET ?? "your-secret-key";
+  private static readonly JWT_EXPIRES_IN = "24h";
 
-    /**
+  /**
    * Registers a new user.
    * @param {RegisterCredentials} credentials - User registration details.
    * @returns {Promise<User>} The created user (without password).
@@ -31,11 +43,14 @@ export class AuthService {
         },
       });
     } catch (error: unknown) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new ConflictError('Email already exists');
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2002"
+      ) {
+        throw new ConflictError("Email already exists");
       }
       // Re-throw any other unexpected errors
-      throw new InternalServerError('Failed to register user');
+      throw new InternalServerError("Failed to register user");
     }
   }
 
@@ -51,16 +66,16 @@ export class AuthService {
     });
 
     if (!user || !(await bcrypt.compare(credentials.password, user.password))) {
-      throw new UnauthorizedError('Invalid credentials');
+      throw new UnauthorizedError("Invalid credentials");
     }
 
     const token = jwt.sign(
       { userId: user.id, role: user.role },
       AuthService.JWT_SECRET,
-      { expiresIn: AuthService.JWT_EXPIRES_IN }
+      { expiresIn: AuthService.JWT_EXPIRES_IN },
     );
 
-    return token
+    return token;
   }
 
   /**
@@ -71,22 +86,25 @@ export class AuthService {
    */
   async validateToken(token: string): Promise<AuthenticatedUser> {
     try {
-      const decoded = jwt.verify(token, AuthService.JWT_SECRET) as { userId: string; role: Role };
-      
+      const decoded = jwt.verify(token, AuthService.JWT_SECRET) as {
+        userId: string;
+        role: Role;
+      };
+
       const user = await prisma.user.findUnique({
         where: { id: decoded.userId },
       });
 
       if (!user) {
-        throw new UnauthorizedError('User not found');
+        throw new UnauthorizedError("User not found");
       }
 
       return {
         ...user,
         token,
       };
-    } catch (error) {
-      throw new UnauthorizedError('Invalid or expired token');
+    } catch {
+      throw new UnauthorizedError("Invalid or expired token");
     }
   }
 }

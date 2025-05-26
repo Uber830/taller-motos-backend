@@ -1,30 +1,34 @@
-import express from 'express';
+import express from "express";
 
-import { authMiddleware } from './modules/auth/middleware/auth';
-//import { adminMiddleware } from './modules/admin/middleware/index';
-import authRoutes from './modules/auth/routes';
 //import adminRoutes from './modules/admin/routes';
-import { errorHandler } from './core/middleware/error-handler';
+import { errorHandler } from "./core/middleware/error-handler";
+import { logger } from "./core/logger";
+import { validationErrorHandler } from "./core/middleware/validation-error-handler";
+import { authMiddleware } from "./modules/auth/middleware/auth";
+//import { adminMiddleware } from './modules/admin/middleware/index';
+import authRoutes from "./modules/auth/routes";
 
 const app = express();
 app.use(express.json());
 
 // Auth routes
-app.use('/api/auth', authRoutes);
+app.use("/api/auth", authRoutes);
 
 // Protected routes
-app.use('/api', authMiddleware);
+app.use("/api", authMiddleware);
 
 // Admin routes
 //app.use('/api/admin', adminMiddleware, adminRoutes);
 
-// Global Error Handler - MUST be after all routes and other middleware
-// Error handling middleware must be registered with all 4 parameters
+// Global Error Handlers - MUST be after all routes and other middleware
+// Validation errors should be handled first
+app.use(validationErrorHandler);
+
+// Generic error handler
 app.use(errorHandler);
 
 // Start server
-const PORT = parseInt(process.env.PORT || '3000');
+const PORT = Number.parseInt(process.env.PORT ?? "3000");
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  logger.info(`Server is running on port ${PORT}`);
 });
-

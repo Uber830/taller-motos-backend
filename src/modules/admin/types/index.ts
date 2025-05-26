@@ -1,6 +1,10 @@
-import { User, Role } from '@/src/modules/auth/types';
+import { User } from "@/src/modules/auth/types";
 
-export type AdminAction = 'CREATE_USER' | 'DELETE_USER' | 'UPDATE_USER' | 'ASSIGN_ROLE';
+export type AdminAction =
+  | "CREATE_USER"
+  | "DELETE_USER"
+  | "UPDATE_USER"
+  | "ASSIGN_ROLE";
 
 export interface AdminUser extends User {
   lastLogin: Date;
@@ -10,6 +14,6 @@ export interface AdminUser extends User {
 export interface AdminDashboardStats {
   totalUsers: number;
   totalMechanics: number;
-  totalReceptionists: number;
+  totalOwners: number;
   recentActions: AdminAction[];
 }

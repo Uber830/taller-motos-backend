@@ -1,11 +1,20 @@
-import { Request, Response, NextFunction } from 'express';
-// import { authMiddleware } from '../auth/middleware';
+import { NextFunction, Request, Response } from "express";
 
-export const adminMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const user = (req as any).user;
-  
-  if (!user || user.role !== 'ADMIN') {
-    res.status(403).json({ error: 'Admin access required' });
+interface AuthenticatedRequest extends Request {
+  user?: {
+    role: string;
+  };
+}
+
+export const adminMiddleware = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): void => {
+  const user = req.user;
+
+  if (!user || user.role !== "ADMIN") {
+    res.status(403).json({ error: "Admin access required" });
     return;
   }
 

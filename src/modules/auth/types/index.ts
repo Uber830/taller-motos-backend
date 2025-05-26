@@ -1,4 +1,4 @@
-export type Role = 'ADMIN' | 'OWNER' | 'MECHANIC';
+export type Role = "ADMIN" | "OWNER" | "MECHANIC";
 
 export interface User {
   id: string;
@@ -30,6 +30,6 @@ export interface AuthToken {
   token: string;
 }
 
-export interface AuthenticatedUser extends Omit<User, 'password'> {
+export interface AuthenticatedUser extends Omit<User, "password"> {
   token: string;
 }
