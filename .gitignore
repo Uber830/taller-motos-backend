@@ -10,4 +10,3 @@ coverage/
 k6-results
 prisma/client
 prisma/seed.ts
-.github
