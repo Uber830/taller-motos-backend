@@ -2,12 +2,14 @@ export type Role = "ADMIN" | "OWNER" | "MECHANIC";
 
 export interface User {
   id: string;
-  sessionFacebook: number;
-  sessionGoogle: number;
+  sessionFacebook: boolean;
+  sessionGoogle: boolean;
   email: string;
   password: string;
-  fullName: string;
-  role: Role;
+  firstName: string;
+  lastName: string;
+  avatar: string | null;
+  habeas_data: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -18,12 +20,14 @@ export interface LoginCredentials {
 }
 
 export interface RegisterCredentials {
-  sessionFacebook: number;
-  sessionGoogle: number;
+  sessionFacebook: boolean;
+  sessionGoogle: boolean;
   email: string;
   password: string;
-  fullName: string;
-  role: Role;
+  firstName: string;
+  lastName: string;
+  avatar: string | null;
+  habeas_data: boolean;
 }
 
 export interface AuthToken {

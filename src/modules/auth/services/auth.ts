@@ -11,7 +11,6 @@ import {
   AuthenticatedUser,
   LoginCredentials,
   RegisterCredentials,
-  Role,
   User,
 } from "../types/index";
 
@@ -38,8 +37,10 @@ export class AuthService {
           sessionGoogle: credentials.sessionGoogle,
           email: credentials.email,
           password: hashedPassword,
-          fullName: credentials.fullName,
-          role: credentials.role,
+          firstName: credentials.firstName,
+          lastName: credentials.lastName,
+          avatar: credentials.avatar ?? null,
+          habeas_data: credentials.habeas_data,
         },
       });
     } catch (error: unknown) {
@@ -69,11 +70,9 @@ export class AuthService {
       throw new UnauthorizedError("Invalid credentials");
     }
 
-    const token = jwt.sign(
-      { userId: user.id, role: user.role },
-      AuthService.JWT_SECRET,
-      { expiresIn: AuthService.JWT_EXPIRES_IN },
-    );
+    const token = jwt.sign({ userId: user.id }, AuthService.JWT_SECRET, {
+      expiresIn: AuthService.JWT_EXPIRES_IN,
+    });
 
     return token;
   }
@@ -88,7 +87,6 @@ export class AuthService {
     try {
       const decoded = jwt.verify(token, AuthService.JWT_SECRET) as {
         userId: string;
-        role: Role;
       };
 
       const user = await prisma.user.findUnique({

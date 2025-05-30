@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import { z } from "zod";
 
 /**
@@ -13,12 +12,18 @@ export const loginSchema = z.object({
 });
 
 export const registerSchema = z.object({
-  sessionFacebook: z.number().default(0),
-  sessionGoogle: z.number().default(0),
+  sessionFacebook: z.boolean().default(false),
+  sessionGoogle: z.boolean().default(false),
   email: z.string().email(),
   password: z.string().min(6),
-  fullName: z.string().min(2),
-  role: z.enum([Role.ADMIN, Role.OWNER, Role.MECHANIC]),
+  firstName: z.string().min(2),
+  lastName: z.string().min(2),
+  avatar: z
+    .string()
+    .url()
+    .optional()
+    .transform(val => val ?? null),
+  habeas_data: z.boolean().default(false),
 });
 
 export type LoginCredentials = z.infer<typeof loginSchema>;
