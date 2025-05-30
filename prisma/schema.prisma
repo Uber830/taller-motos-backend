@@ -8,23 +8,176 @@ generator client {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  sessionFacebook Boolean @default(false)
-  sessionGoogle Boolean @default(false)
-  email     String   @unique
-  password  String
-  firstName String
-  lastName  String
-  avatar    String?
-  habeas_data Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String         @id @default(cuid())
+  sessionFacebook Boolean        @default(false)
+  sessionGoogle   Boolean        @default(false)
+  email          String         @unique
+  password       String
+  firstName      String
+  lastName       String
+  avatar         String?
+  habeas_data    Boolean        @default(false)
+  ownedWorkshop  Workshop?      @relation("WorkshopOwner")
+  employeeAt     WorkshopUser[] @relation("WorkshopEmployee")
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
 
   @@map("users")
+}
+
+model Workshop {
+  id          String         @id @default(cuid())
+  name        String
+  address     String
+  phone       String
+  email       String?
+  logo        String?
+  active      Boolean        @default(true)
+  owner       User           @relation("WorkshopOwner", fields: [ownerId], references: [id])
+  ownerId     String         @unique
+  employees   WorkshopUser[] @relation("WorkshopEmployee")
+  customers   Customer[]
+  workOrders  WorkOrder[]
+  services    Service[]
+  supplies    Supply[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@map("workshops")
+}
+
+model WorkshopUser {
+  id          String    @id @default(cuid())
+  user        User      @relation("WorkshopEmployee", fields: [userId], references: [id])
+  userId      String
+  workshop    Workshop  @relation("WorkshopEmployee", fields: [workshopId], references: [id])
+  workshopId  String
+  role        Role      @default(OWNER)
+  active      Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([userId, workshopId])
+  @@map("workshop_users")
+}
+
+model Customer {
+  id          String      @id @default(cuid())
+  firstName   String
+  lastName    String
+  email       String?
+  phone       String
+  address     String?
+  workshop    Workshop    @relation(fields: [workshopId], references: [id])
+  workshopId  String
+  motorcycles Motorcycle[]
+  workOrders  WorkOrder[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("customers")
+}
+
+model Motorcycle {
+  id          String     @id @default(cuid())
+  brand       String
+  model       String
+  year        Int
+  plate       String
+  color       String
+  customer    Customer   @relation(fields: [customerId], references: [id])
+  customerId  String
+  workOrders  WorkOrder[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("motorcycles")
+}
+
+model Service {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  workshop    Workshop    @relation(fields: [workshopId], references: [id])
+  workshopId  String
+  workOrders  WorkOrder[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@map("services")
+}
+
+model WorkOrder {
+  id          String     @id @default(cuid())
+  status      OrderStatus @default(PENDING)
+  workshop    Workshop   @relation(fields: [workshopId], references: [id])
+  workshopId  String
+  customer    Customer   @relation(fields: [customerId], references: [id])
+  customerId  String
+  motorcycle  Motorcycle @relation(fields: [motorcycleId], references: [id])
+  motorcycleId String
+  service     Service    @relation(fields: [serviceId], references: [id])
+  serviceId   String
+  description String?
+  supplies    SupplyOnWorkOrder[]
+  total       Float
+  invoice     Invoice?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("work_orders")
+}
+
+model Supply {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  price       Float
+  stock       Int       @default(0)
+  workshop    Workshop   @relation(fields: [workshopId], references: [id])
+  workshopId  String
+  workOrders  SupplyOnWorkOrder[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("supplies")
+}
+
+model SupplyOnWorkOrder {
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
+  workOrderId String
+  supply      Supply     @relation(fields: [supplyId], references: [id])
+  supplyId      String
+  quantity    Int
+  price       Float
+  createdAt   DateTime @default(now())
+
+  @@id([workOrderId, supplyId])
+  @@map("supplies_on_work_orders")
+}
+
+model Invoice {
+  id          String    @id @default(cuid())
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
+  workOrderId String    @unique
+  total       Float
+  paid        Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@map("invoices")
 }
 
 enum Role {
   ADMIN
   OWNER
   MECHANIC
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
 }
