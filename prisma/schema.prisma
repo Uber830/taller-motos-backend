@@ -9,12 +9,14 @@ generator client {
 
 model User {
   id        String   @id @default(cuid())
-  sessionFacebook Int @default(0)
-  sessionGoogle Int @default(0)
+  sessionFacebook Boolean @default(false)
+  sessionGoogle Boolean @default(false)
   email     String   @unique
   password  String
-  fullName  String
-  role      Role
+  firstName String
+  lastName  String
+  avatar    String?
+  habeas_data Boolean @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
