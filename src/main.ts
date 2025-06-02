@@ -7,6 +7,7 @@ import { validationErrorHandler } from "./core/middleware/validation-error-handl
 import { authMiddleware } from "./modules/auth/middleware/auth";
 //import { adminMiddleware } from './modules/admin/middleware/index';
 import authRoutes from "./modules/auth/routes";
+import workshopRoutes from "./modules/workshop/workshop.routes";
 
 const app = express();
 app.use(express.json());
@@ -16,6 +17,9 @@ app.use("/api/auth", authRoutes);
 
 // Protected routes
 app.use("/api", authMiddleware);
+
+// Workshop routes (protected)
+app.use("/api/workshops", workshopRoutes);
 
 // Admin routes
 //app.use('/api/admin', adminMiddleware, adminRoutes);
