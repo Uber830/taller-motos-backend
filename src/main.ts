@@ -3,6 +3,7 @@ import express from "express";
 //import adminRoutes from './modules/admin/routes';
 import { errorHandler } from "./core/middleware/error-handler";
 import { logger } from "./core/logger";
+import cors from "cors";
 import { validationErrorHandler } from "./core/middleware/validation-error-handler";
 import { authMiddleware } from "./modules/auth/middleware/auth";
 //import { adminMiddleware } from './modules/admin/middleware/index';
@@ -11,6 +12,16 @@ import workshopRoutes from "./modules/workshop/workshop.routes";
 
 const app = express();
 app.use(express.json());
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"], // Métodos HTTP permitidos
+    allowedHeaders: ["Content-Type", "Authorization"], // Define qué headers HTTP pueden ser utilizados durante la solicitud
+    // allowedHeaders permite especificar qué cabeceras HTTP pueden ser utilizadas en las peticiones:
+    // - Content-Type: Para especificar el tipo de contenido que se envía (ej: application/json)
+    // - Authorization: Para enviar tokens de autenticación
+  })
+);
 
 // Auth routes
 app.use("/api/auth", authRoutes);

@@ -22,7 +22,6 @@ API REST moderna y eficiente para la gestión de talleres de motos, construida c
 - 🐳 **Docker**: Contenedorización para desarrollo y producción
 - 🔄 **CI/CD**: Integración y despliegue continuo con GitHub Actions
 
-
 ## 💻 Requisitos Previos
 
 - [Bun](https://bun.sh) >= 1.0.0
@@ -32,28 +31,33 @@ API REST moderna y eficiente para la gestión de talleres de motos, construida c
 ## 📍 Instalación
 
 1. Clonar el repositorio:
+
 ```bash
 git clone https://github.com/Uber830/taller-motos-backend.git
 cd taller-motos-backend
 ```
 
 2. Instalar dependencias:
+
 ```bash
 bun install
 ```
 
 3. Configurar variables de entorno:
+
 ```bash
 cp .env.example .env
 # Editar .env con tus configuraciones
 ```
 
 4. Generar el cliente de Prisma:
+
 ```bash
 bunx prisma generate
 ```
 
 5. Ejecutar migraciones:
+
 ```bash
 bunx prisma migrate dev
 ```
@@ -79,15 +83,10 @@ docker compose up  # Inicia los servicios en contenedores
 ## 📝 API Endpoints
 
 ### Autenticación
+
 - `POST /api/auth/login` - Iniciar sesión
 - `POST /api/auth/register` - Registrar nuevo usuario
 - `POST /api/auth/logout` - Cerrar sesión
-
-### Usuarios
-- `GET /api/users` - Listar usuarios
-- `GET /api/users/:id` - Obtener usuario
-- `PUT /api/users/:id` - Actualizar usuario
-- `DELETE /api/users/:id` - Eliminar usuario
 
 ## 🔒 Variables de Entorno
 
