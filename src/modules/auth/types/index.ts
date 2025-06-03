@@ -23,7 +23,7 @@ export interface RegisterCredentials {
   sessionFacebook: boolean;
   sessionGoogle: boolean;
   email: string;
-  password: string;
+  password?: string;
   firstName: string;
   lastName: string;
   avatar: string | null;

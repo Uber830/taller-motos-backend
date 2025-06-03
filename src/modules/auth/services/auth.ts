@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 import {
   ConflictError,
@@ -22,6 +23,14 @@ export class AuthService {
   private static readonly JWT_EXPIRES_IN = "24h";
 
   /**
+   * Generates a random password for social login users
+   * @returns {string} A random password
+   */
+  private generateRandomPassword(): string {
+    return crypto.randomBytes(16).toString('hex');
+  }
+
+  /**
    * Registers a new user.
    * @param {RegisterCredentials} credentials - User registration details.
    * @returns {Promise<User>} The created user (without password).
@@ -29,7 +38,12 @@ export class AuthService {
    * @throws {InternalServerError} For other unexpected errors.
    */
   async register(credentials: RegisterCredentials): Promise<User> {
-    const hashedPassword = await bcrypt.hash(credentials.password, 10);
+    // If user is registering with social auth and no password provided, generate one
+    const password = (credentials.sessionFacebook || credentials.sessionGoogle) && !credentials.password
+      ? this.generateRandomPassword()
+      : credentials.password ?? this.generateRandomPassword();
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     try {
       return await prisma.user.create({
         data: {
