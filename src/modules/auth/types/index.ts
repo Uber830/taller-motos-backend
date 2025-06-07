@@ -1,4 +1,8 @@
 export type Role = "ADMIN" | "OWNER" | "MECHANIC";
+export enum SessionNetwork {
+  GOOGLE = "google",
+  FACEBOOK = "facebook",
+}
 
 export interface User {
   id: string;
@@ -16,7 +20,8 @@ export interface User {
 
 export interface LoginCredentials {
   email: string;
-  password: string;
+  password?: string;
+  session_network?: SessionNetwork;
 }
 
 export interface RegisterCredentials {

@@ -14,6 +14,7 @@ import {
   RegisterCredentials,
   User,
 } from "../types/index";
+import { SessionNetwork } from "../types/index";
 
 const prisma = new PrismaClient();
 
@@ -76,12 +77,71 @@ export class AuthService {
    * @throws {UnauthorizedError} If credentials are invalid.
    */
   async login(credentials: LoginCredentials): Promise<string> {
+    // Verificar si es login social
+    if (credentials.session_network) {
+      return await this.handleSocialLogin(credentials);
+    }
+
+    // Login tradicional con email/password
     const user = await prisma.user.findUnique({
       where: { email: credentials.email },
     });
 
-    if (!user || !(await bcrypt.compare(credentials.password, user.password))) {
-      throw new UnauthorizedError("Invalid credentials");
+    if (!user) {
+      throw new UnauthorizedError("User not found");
+    }
+
+    if (!credentials.password) {
+      throw new UnauthorizedError("Password is required for email login");
+    }
+
+    if (!(await bcrypt.compare(credentials.password, user.password))) {
+      throw new UnauthorizedError("Invalid password");
+    }
+
+    const token = jwt.sign({ userId: user.id }, AuthService.JWT_SECRET, {
+      expiresIn: AuthService.JWT_EXPIRES_IN,
+    });
+
+    return token;
+  }
+
+  /**
+   * Handles social login (Google/Facebook)
+   * @param {LoginCredentials} credentials - User login details with social network
+   * @returns {Promise<string>} The authentication token
+   * @throws {UnauthorizedError} If social login fails
+   */
+  private async handleSocialLogin(credentials: LoginCredentials): Promise<string> {
+    const { email, session_network } = credentials;
+
+    // TypeScript knows session_network is defined here because of the if check in login()
+    const network = session_network as SessionNetwork;
+
+    if (![SessionNetwork.GOOGLE, SessionNetwork.FACEBOOK].includes(network)) {
+      throw new UnauthorizedError("Unsupported social network");
+    }
+
+    // Buscar usuario en la base de datos
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new UnauthorizedError("User not found. Please register first.");
+    }
+
+    // Validar que el usuario tenga habilitado el login social correspondiente
+    if (network === SessionNetwork.GOOGLE && !user.sessionGoogle) {
+      throw new UnauthorizedError("This account is not linked to Google. Please register with Google first.");
+    }
+    if (network === SessionNetwork.FACEBOOK && !user.sessionFacebook) {
+      throw new UnauthorizedError("This account is not linked to Facebook. Please register with Facebook first.");
+    }
+
+    // Validar que el usuario haya aceptado los términos
+    if (!user.habeas_data) {
+      throw new UnauthorizedError("You must accept the terms and conditions to login.");
     }
 
     const token = jwt.sign({ userId: user.id }, AuthService.JWT_SECRET, {
@@ -120,3 +180,5 @@ export class AuthService {
     }
   }
 }
+
+export const authService = new AuthService();
