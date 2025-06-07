@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
-import { ZodError, ZodObject, ZodTypeAny } from 'zod'; // Changed AnyZodObject to ZodTypeAny
-import { logger } from '../logger';
+import { Request, Response, NextFunction } from "express";
+import { ZodError, ZodObject, ZodTypeAny } from "zod"; // Changed AnyZodObject to ZodTypeAny
+import { logger } from "../logger";
 
 /**
  * Middleware to validate request data against a Zod schema.
@@ -11,8 +11,10 @@ import { logger } from '../logger';
  * @param schema - The Zod schema to validate against.
  * @returns Express middleware function.
  */
-export const validateRequest = 
-  (schema: ZodTypeAny) => // Changed from AnyZodObject to ZodTypeAny
+export const validateRequest =
+  (
+    schema: ZodTypeAny, // Changed from AnyZodObject to ZodTypeAny
+  ) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (schema instanceof ZodObject) {
@@ -38,8 +40,8 @@ export const validateRequest =
       if (error instanceof ZodError) {
         next(error);
       } else {
-        logger.error('Non-Zod error during request validation:', { error });
-        next(new Error('Error validating request data'));
+        logger.error("Non-Zod error during request validation:", { error });
+        next(new Error("Error validating request data"));
       }
     }
   };

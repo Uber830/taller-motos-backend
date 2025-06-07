@@ -20,7 +20,7 @@ app.use(
     // allowedHeaders permite especificar qué cabeceras HTTP pueden ser utilizadas en las peticiones:
     // - Content-Type: Para especificar el tipo de contenido que se envía (ej: application/json)
     // - Authorization: Para enviar tokens de autenticación
-  })
+  }),
 );
 
 // Auth routes
