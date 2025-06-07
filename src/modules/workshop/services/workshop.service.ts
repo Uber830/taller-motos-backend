@@ -1,6 +1,13 @@
-import { PrismaClient, Workshop, User, EmployeeRole } from '@prisma/client';
-import { CreateWorkshopDto, UpdateWorkshopDto } from '../interfaces/workshop.interface';
-import { ConflictError, NotFoundError, ForbiddenError } from '../../../core/errors';
+import { PrismaClient, Workshop, User, EmployeeRole } from "@prisma/client";
+import {
+  CreateWorkshopDto,
+  UpdateWorkshopDto,
+} from "../interfaces/workshop.interface";
+import {
+  ConflictError,
+  NotFoundError,
+  ForbiddenError,
+} from "../../../core/errors";
 
 /**
  * Service for workshop management
@@ -25,7 +32,7 @@ export class WorkshopService {
     });
 
     if (existingWorkshop) {
-      throw new ConflictError('User already owns a workshop');
+      throw new ConflictError("User already owns a workshop");
     }
 
     return prisma.workshop.create({
@@ -41,11 +48,11 @@ export class WorkshopService {
             id: true,
             firstName: true,
             lastName: true,
-            email: true
-          }
+            email: true,
+          },
         },
-        employees: true
-      }
+        employees: true,
+      },
     });
   }
 
@@ -63,26 +70,26 @@ export class WorkshopService {
             id: true,
             firstName: true,
             lastName: true,
-            email: true
-          }
+            email: true,
+          },
         },
         employees: {
           where: {
-            active: true
+            active: true,
           },
           orderBy: {
-            createdAt: 'desc'
-          }
+            createdAt: "desc",
+          },
         },
         services: true,
         supplies: {
           where: {
             stock: {
-              gt: 0
-            }
-          }
-        }
-      }
+              gt: 0,
+            },
+          },
+        },
+      },
     });
   }
 
@@ -100,23 +107,23 @@ export class WorkshopService {
             id: true,
             firstName: true,
             lastName: true,
-            email: true
-          }
+            email: true,
+          },
         },
         employees: {
           where: {
-            active: true
-          }
+            active: true,
+          },
         },
         services: true,
         supplies: {
           where: {
             stock: {
-              gt: 0
-            }
-          }
-        }
-      }
+              gt: 0,
+            },
+          },
+        },
+      },
     });
   }
 
@@ -128,21 +135,25 @@ export class WorkshopService {
    * @returns {Promise<Workshop>} The updated workshop.
    * @throws {HttpError} If the workshop is not found or the user is not the owner.
    */
-  async updateWorkshop(workshopId: string, userId: string, workshopData: UpdateWorkshopDto) {
+  async updateWorkshop(
+    workshopId: string,
+    userId: string,
+    workshopData: UpdateWorkshopDto,
+  ) {
     const workshop = await prisma.workshop.findUnique({
       where: { id: workshopId },
       include: {
         employees: {
           where: {
             active: true,
-            role: EmployeeRole.ADMIN
-          }
-        }
-      }
+            role: EmployeeRole.ADMIN,
+          },
+        },
+      },
     });
 
     if (!workshop) {
-      throw new NotFoundError('Workshop not found');
+      throw new NotFoundError("Workshop not found");
     }
 
     // Check if user is owner or admin
@@ -150,7 +161,9 @@ export class WorkshopService {
     const isAdmin = workshop.employees.some(emp => emp.id === userId);
 
     if (!isOwner && !isAdmin) {
-      throw new ForbiddenError('User is not authorized to update this workshop');
+      throw new ForbiddenError(
+        "User is not authorized to update this workshop",
+      );
     }
 
     return prisma.workshop.update({
@@ -162,15 +175,15 @@ export class WorkshopService {
             id: true,
             firstName: true,
             lastName: true,
-            email: true
-          }
+            email: true,
+          },
         },
         employees: {
           where: {
-            active: true
-          }
-        }
-      }
+            active: true,
+          },
+        },
+      },
     });
   }
 
@@ -180,47 +193,53 @@ export class WorkshopService {
       include: {
         employees: {
           where: {
-            active: true
-          }
+            active: true,
+          },
         },
         workOrders: {
           where: {
             createdAt: {
-              gte: new Date(new Date().setDate(new Date().getDate() - 30)) // Last 30 days
-            }
+              gte: new Date(new Date().setDate(new Date().getDate() - 30)), // Last 30 days
+            },
           },
           include: {
             service: true,
-            supplies: true
-          }
+            supplies: true,
+          },
         },
         supplies: {
           where: {
             stock: {
-              lte: 10 // Low stock alert
-            }
-          }
-        }
-      }
+              lte: 10, // Low stock alert
+            },
+          },
+        },
+      },
     });
 
     if (!workshop) {
-      throw new NotFoundError('Workshop not found');
+      throw new NotFoundError("Workshop not found");
     }
 
-    if (workshop.ownerId !== userId && !workshop.employees.some(emp => emp.id === userId)) {
-      throw new ForbiddenError('User is not authorized to view workshop stats');
+    if (
+      workshop.ownerId !== userId &&
+      !workshop.employees.some(emp => emp.id === userId)
+    ) {
+      throw new ForbiddenError("User is not authorized to view workshop stats");
     }
 
     return {
       totalEmployees: workshop.employees.length,
       recentWorkOrders: workshop.workOrders.length,
       lowStockSupplies: workshop.supplies.length,
-      totalRevenue: workshop.workOrders.reduce((sum, order) => sum + order.total, 0)
+      totalRevenue: workshop.workOrders.reduce(
+        (sum, order) => sum + order.total,
+        0,
+      ),
     };
   }
 
-  // Consider adding a deleteWorkshop method if necessary, 
+  // Consider adding a deleteWorkshop method if necessary,
   // ensuring proper authorization and handling of related data.
 }
 

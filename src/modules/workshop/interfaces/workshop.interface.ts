@@ -1,5 +1,8 @@
-import { z } from 'zod';
-import { createWorkshopSchema, updateWorkshopSchema } from '../validators/workshop.validator';
+import { z } from "zod";
+import {
+  createWorkshopSchema,
+  updateWorkshopSchema,
+} from "../validators/workshop.validator";
 
 /**
  * DTOs for workshop management
