@@ -1,7 +1,21 @@
-import { PrismaClient, User, Workshop, WorkshopEmployeeInfo, EmployeeRole } from '@prisma/client';
-import { CreateWorkshopEmployeeDto, UpdateWorkshopEmployeeDto } from '../interfaces/workshop-employee.interface';
-import { NotFoundError, ForbiddenError, ConflictError, BadRequestError } from '../../../core/errors';
-import { Role } from '../../auth/types';
+import {
+  PrismaClient,
+  User,
+  Workshop,
+  WorkshopEmployeeInfo,
+  EmployeeRole,
+} from "@prisma/client";
+import {
+  CreateWorkshopEmployeeDto,
+  UpdateWorkshopEmployeeDto,
+} from "../interfaces/workshop-employee.interface";
+import {
+  NotFoundError,
+  ForbiddenError,
+  ConflictError,
+  BadRequestError,
+} from "../../../core/errors";
+import { Role } from "../../auth/types";
 
 const prisma = new PrismaClient();
 
@@ -16,43 +30,53 @@ export class WorkshopEmployeeService {
    * @throws ForbiddenError if the user is not the owner.
    * @throws NotFoundError if the workshop is not found.
    */
-  private async verifyWorkshopOwner(workshopId: string, actingUserId: string): Promise<Workshop> {
+  private async verifyWorkshopOwner(
+    workshopId: string,
+    actingUserId: string,
+  ): Promise<Workshop> {
     const workshop = await prisma.workshop.findUnique({
       where: { id: workshopId },
     });
 
     if (!workshop) {
-      throw new NotFoundError('Workshop not found.');
+      throw new NotFoundError("Workshop not found.");
     }
 
     if (workshop.ownerId !== actingUserId) {
-      throw new ForbiddenError('User is not authorized to manage employees for this workshop.');
+      throw new ForbiddenError(
+        "User is not authorized to manage employees for this workshop.",
+      );
     }
     return workshop;
   }
 
-  private async validateWorkshopAccess(workshopId: string, actingUserId: string) {
+  private async validateWorkshopAccess(
+    workshopId: string,
+    actingUserId: string,
+  ) {
     const workshop = await prisma.workshop.findUnique({
       where: { id: workshopId },
       include: {
         employees: {
           where: {
             active: true,
-            role: EmployeeRole.ADMIN
-          }
-        }
-      }
+            role: EmployeeRole.ADMIN,
+          },
+        },
+      },
     });
 
     if (!workshop) {
-      throw new NotFoundError('Workshop not found');
+      throw new NotFoundError("Workshop not found");
     }
 
     const isOwner = workshop.ownerId === actingUserId;
     const isAdmin = workshop.employees.some(emp => emp.id === actingUserId);
 
     if (!isOwner && !isAdmin) {
-      throw new ForbiddenError('User is not authorized to manage workshop employees');
+      throw new ForbiddenError(
+        "User is not authorized to manage workshop employees",
+      );
     }
 
     return workshop;
@@ -68,7 +92,7 @@ export class WorkshopEmployeeService {
   public async addEmployeeToWorkshop(
     workshopId: string,
     employeeData: CreateWorkshopEmployeeDto,
-    actingUserId: string
+    actingUserId: string,
   ): Promise<WorkshopEmployeeInfo> {
     await this.validateWorkshopAccess(workshopId, actingUserId);
 
@@ -78,12 +102,14 @@ export class WorkshopEmployeeService {
         where: {
           workshopId,
           email: employeeData.email,
-          active: true
-        }
+          active: true,
+        },
       });
 
       if (existingEmployee) {
-        throw new ConflictError('An employee with this email already exists in this workshop');
+        throw new ConflictError(
+          "An employee with this email already exists in this workshop",
+        );
       }
     }
 
@@ -91,10 +117,10 @@ export class WorkshopEmployeeService {
       data: {
         ...employeeData,
         workshop: {
-          connect: { id: workshopId }
+          connect: { id: workshopId },
         },
-        active: true
-      }
+        active: true,
+      },
     });
   }
 
@@ -106,18 +132,18 @@ export class WorkshopEmployeeService {
    */
   public async getEmployeesByWorkshop(
     workshopId: string,
-    actingUserId: string
+    actingUserId: string,
   ): Promise<WorkshopEmployeeInfo[]> {
     await this.validateWorkshopAccess(workshopId, actingUserId);
 
     return prisma.workshopEmployeeInfo.findMany({
       where: {
         workshopId,
-        active: true
+        active: true,
       },
       orderBy: {
-        firstName: 'asc'
-      }
+        firstName: "asc",
+      },
     });
   }
 
@@ -133,16 +159,16 @@ export class WorkshopEmployeeService {
     workshopId: string,
     employeeId: string,
     data: UpdateWorkshopEmployeeDto,
-    actingUserId: string
+    actingUserId: string,
   ): Promise<WorkshopEmployeeInfo> {
     // Get workshop to check if acting user is owner
     const workshop = await prisma.workshop.findUnique({
       where: { id: workshopId },
-      select: { ownerId: true }
+      select: { ownerId: true },
     });
 
     if (!workshop) {
-      throw new NotFoundError('Workshop not found');
+      throw new NotFoundError("Workshop not found");
     }
 
     const isOwner = workshop.ownerId === actingUserId;
@@ -154,27 +180,29 @@ export class WorkshopEmployeeService {
       const employeeToUpdate = await prisma.workshopEmployeeInfo.findFirst({
         where: {
           id: employeeId,
-          workshopId
-        }
+          workshopId,
+        },
       });
 
       if (!employeeToUpdate) {
-        throw new NotFoundError('Employee not found in this workshop');
+        throw new NotFoundError("Employee not found in this workshop");
       }
 
       if (employeeToUpdate.role === EmployeeRole.ADMIN) {
-        throw new ForbiddenError('Only workshop owners can modify admin employee details');
+        throw new ForbiddenError(
+          "Only workshop owners can modify admin employee details",
+        );
       }
     }
 
     return prisma.workshopEmployeeInfo.update({
       where: {
         id: employeeId,
-        workshopId
+        workshopId,
       },
       data: {
-        ...data
-      }
+        ...data,
+      },
     });
   }
 
@@ -189,19 +217,19 @@ export class WorkshopEmployeeService {
   public async getEmployeeInWorkshop(
     workshopId: string,
     employeeId: string,
-    actingUserId: string
+    actingUserId: string,
   ): Promise<WorkshopEmployeeInfo> {
     await this.validateWorkshopAccess(workshopId, actingUserId);
 
     const employee = await prisma.workshopEmployeeInfo.findFirst({
       where: {
         id: employeeId,
-        workshopId
-      }
+        workshopId,
+      },
     });
 
     if (!employee) {
-      throw new NotFoundError('Employee not found in this workshop');
+      throw new NotFoundError("Employee not found in this workshop");
     }
 
     return employee;
@@ -219,32 +247,34 @@ export class WorkshopEmployeeService {
     workshopId: string,
     employeeId: string,
     active: boolean,
-    actingUserId: string
+    actingUserId: string,
   ): Promise<WorkshopEmployeeInfo> {
     // Get workshop to check if acting user is owner
     const workshop = await prisma.workshop.findUnique({
-      where: { id: workshopId }
+      where: { id: workshopId },
     });
 
     if (!workshop) {
-      throw new NotFoundError('Workshop not found');
+      throw new NotFoundError("Workshop not found");
     }
 
     const employeeToUpdate = await prisma.workshopEmployeeInfo.findFirst({
       where: {
         id: employeeId,
-        workshopId
-      }
+        workshopId,
+      },
     });
 
     if (!employeeToUpdate) {
-      throw new NotFoundError('Employee not found in this workshop');
+      throw new NotFoundError("Employee not found in this workshop");
     }
 
     // If employee is admin, only workshop owner can change their status
     if (employeeToUpdate.role === EmployeeRole.ADMIN) {
       if (workshop.ownerId !== actingUserId) {
-        throw new ForbiddenError('Only workshop owners can modify admin employee status');
+        throw new ForbiddenError(
+          "Only workshop owners can modify admin employee status",
+        );
       }
     } else {
       // For non-admin employees, validate normal workshop access
@@ -254,18 +284,18 @@ export class WorkshopEmployeeService {
     return prisma.workshopEmployeeInfo.update({
       where: {
         id: employeeId,
-        workshopId
+        workshopId,
       },
       data: {
-        active
-      }
+        active,
+      },
     });
   }
 
   public async getEmployeesByRole(
     workshopId: string,
     role: EmployeeRole,
-    actingUserId: string
+    actingUserId: string,
   ): Promise<WorkshopEmployeeInfo[]> {
     await this.validateWorkshopAccess(workshopId, actingUserId);
 
@@ -273,11 +303,11 @@ export class WorkshopEmployeeService {
       where: {
         workshopId,
         role,
-        active: true
+        active: true,
       },
       orderBy: {
-        createdAt: 'desc'
-      }
+        createdAt: "desc",
+      },
     });
   }
 }

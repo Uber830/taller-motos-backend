@@ -1,8 +1,12 @@
-import { Router } from 'express';
-import { workshopEmployeeController } from './controllers/workshop-employee.controller';
-import { validateRequest } from '../../core/middleware';
-import { createWorkshopEmployeeSchema, updateWorkshopEmployeeSchema, setWorkshopEmployeeStatusSchema } from './validators/workshop-employee.validator';
-import { authMiddleware } from '../auth/middleware/auth';
+import { Router } from "express";
+import { workshopEmployeeController } from "./controllers/workshop-employee.controller";
+import { validateRequest } from "../../core/middleware";
+import {
+  createWorkshopEmployeeSchema,
+  updateWorkshopEmployeeSchema,
+  setWorkshopEmployeeStatusSchema,
+} from "./validators/workshop-employee.validator";
+import { authMiddleware } from "../auth/middleware/auth";
 
 /**
  * Routes for managing workshop employees.
@@ -12,40 +16,36 @@ const router = Router({ mergeParams: true }); // mergeParams allows access to :w
 
 // Add a new employee to the workshop
 router.post(
-  '/',
+  "/",
   authMiddleware,
   validateRequest(createWorkshopEmployeeSchema),
-  workshopEmployeeController.addEmployee
+  workshopEmployeeController.addEmployee,
 );
 
 // Get all employees for the workshop
-router.get(
-  '/',
-  authMiddleware,
-  workshopEmployeeController.getEmployees
-);
+router.get("/", authMiddleware, workshopEmployeeController.getEmployees);
 
 // Update an employee's details
 router.put(
-  '/:employeeUserId',
+  "/:employeeUserId",
   authMiddleware,
   validateRequest(updateWorkshopEmployeeSchema),
-  workshopEmployeeController.updateEmployee
+  workshopEmployeeController.updateEmployee,
 );
 
 // Get a specific employee
 router.get(
-  '/:employeeUserId',
+  "/:employeeUserId",
   authMiddleware,
-  workshopEmployeeController.getEmployee
+  workshopEmployeeController.getEmployee,
 );
 
 // Set employee active status (activate/deactivate)
 router.patch(
-  '/:employeeUserId/status',
+  "/:employeeUserId/status",
   authMiddleware,
   validateRequest(setWorkshopEmployeeStatusSchema),
-  workshopEmployeeController.setEmployeeStatus
+  workshopEmployeeController.setEmployeeStatus,
 );
 
 export default router;

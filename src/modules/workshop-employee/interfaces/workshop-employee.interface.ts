@@ -1,4 +1,4 @@
-import { EmployeeRole } from '@prisma/client';
+import { EmployeeRole } from "@prisma/client";
 
 export interface CreateWorkshopEmployeeDto {
   firstName: string;

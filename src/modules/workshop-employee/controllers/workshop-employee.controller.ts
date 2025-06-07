@@ -1,8 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
-import { workshopEmployeeService } from '../services/workshop-employee.service';
-import { CreateWorkshopEmployeeDto, UpdateWorkshopEmployeeDto, SetWorkshopEmployeeStatusDto } from '../interfaces/workshop-employee.interface';
-import { AuthenticatedRequest } from '../../auth/middleware/auth';
-import { UnauthorizedError } from '../../../core/errors';
+import { Request, Response, NextFunction } from "express";
+import { workshopEmployeeService } from "../services/workshop-employee.service";
+import {
+  CreateWorkshopEmployeeDto,
+  UpdateWorkshopEmployeeDto,
+  SetWorkshopEmployeeStatusDto,
+} from "../interfaces/workshop-employee.interface";
+import { AuthenticatedRequest } from "../../auth/middleware/auth";
+import { UnauthorizedError } from "../../../core/errors";
 
 /**
  * Controller for managing workshop employees.
@@ -14,11 +18,15 @@ export class WorkshopEmployeeController {
    * @param res - Express response object.
    * @param next - Express next middleware function.
    */
-  public async addEmployee(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  public async addEmployee(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const actingUserId = req.user?.id;
       if (!actingUserId) {
-        throw new UnauthorizedError('User not authenticated.');
+        throw new UnauthorizedError("User not authenticated.");
       }
 
       const { workshopId } = req.params;
@@ -27,7 +35,7 @@ export class WorkshopEmployeeController {
       const newEmployee = await workshopEmployeeService.addEmployeeToWorkshop(
         workshopId,
         employeeData,
-        actingUserId
+        actingUserId,
       );
 
       res.status(201).json(newEmployee);
@@ -42,15 +50,22 @@ export class WorkshopEmployeeController {
    * @param res - Express response object.
    * @param next - Express next middleware function.
    */
-  public async getEmployees(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  public async getEmployees(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const actingUserId = req.user?.id;
       if (!actingUserId) {
-        throw new UnauthorizedError('User not authenticated.');
+        throw new UnauthorizedError("User not authenticated.");
       }
 
       const { workshopId } = req.params;
-      const employees = await workshopEmployeeService.getEmployeesByWorkshop(workshopId, actingUserId);
+      const employees = await workshopEmployeeService.getEmployeesByWorkshop(
+        workshopId,
+        actingUserId,
+      );
       res.status(200).json(employees);
     } catch (error) {
       next(error);
@@ -63,22 +78,27 @@ export class WorkshopEmployeeController {
    * @param res - Express response object.
    * @param next - Express next middleware function.
    */
-  public async updateEmployee(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  public async updateEmployee(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const actingUserId = req.user?.id;
       if (!actingUserId) {
-        throw new UnauthorizedError('User not authenticated.');
+        throw new UnauthorizedError("User not authenticated.");
       }
 
       const { workshopId, employeeUserId } = req.params;
       const updateData: UpdateWorkshopEmployeeDto = req.body;
 
-      const updatedEmployee = await workshopEmployeeService.updateEmployeeInWorkshop(
-        workshopId,
-        employeeUserId,
-        updateData,
-        actingUserId
-      );
+      const updatedEmployee =
+        await workshopEmployeeService.updateEmployeeInWorkshop(
+          workshopId,
+          employeeUserId,
+          updateData,
+          actingUserId,
+        );
 
       res.status(200).json(updatedEmployee);
     } catch (error) {
@@ -92,15 +112,23 @@ export class WorkshopEmployeeController {
    * @param res - Express response object.
    * @param next - Express next middleware function.
    */
-  public async getEmployee(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  public async getEmployee(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const actingUserId = req.user?.id;
       if (!actingUserId) {
-        throw new UnauthorizedError('User not authenticated.');
+        throw new UnauthorizedError("User not authenticated.");
       }
 
       const { workshopId, employeeUserId } = req.params;
-      const employee = await workshopEmployeeService.getEmployeeInWorkshop(workshopId, employeeUserId, actingUserId);
+      const employee = await workshopEmployeeService.getEmployeeInWorkshop(
+        workshopId,
+        employeeUserId,
+        actingUserId,
+      );
       res.status(200).json(employee);
     } catch (error) {
       next(error);
@@ -113,22 +141,27 @@ export class WorkshopEmployeeController {
    * @param res - Express response object.
    * @param next - Express next middleware function.
    */
-  public async setEmployeeStatus(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
+  public async setEmployeeStatus(
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
     try {
       const actingUserId = req.user?.id;
       if (!actingUserId) {
-        throw new UnauthorizedError('User not authenticated.');
+        throw new UnauthorizedError("User not authenticated.");
       }
 
       const { workshopId, employeeUserId } = req.params;
       const { active } = req.body as SetWorkshopEmployeeStatusDto;
 
-      const updatedEmployee = await workshopEmployeeService.setEmployeeActiveStatus(
-        workshopId,
-        employeeUserId,
-        active,
-        actingUserId
-      );
+      const updatedEmployee =
+        await workshopEmployeeService.setEmployeeActiveStatus(
+          workshopId,
+          employeeUserId,
+          active,
+          actingUserId,
+        );
 
       res.status(200).json(updatedEmployee);
     } catch (error) {
