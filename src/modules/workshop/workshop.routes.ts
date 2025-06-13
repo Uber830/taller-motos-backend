@@ -20,7 +20,7 @@ router.post(
   "/",
   authMiddleware,
   validateRequest(createWorkshopSchema),
-  workshopController.createWorkshop
+  workshopController.createWorkshop,
 );
 
 // Get the workshop owned by the authenticated user
