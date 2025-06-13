@@ -28,7 +28,7 @@ export class AuthService {
    * @returns {string} A random password
    */
   private generateRandomPassword(): string {
-    return crypto.randomBytes(16).toString('hex');
+    return crypto.randomBytes(16).toString("hex");
   }
 
   /**
@@ -40,9 +40,11 @@ export class AuthService {
    */
   async register(credentials: RegisterCredentials): Promise<User> {
     // If user is registering with social auth and no password provided, generate one
-    const password = (credentials.sessionFacebook || credentials.sessionGoogle) && !credentials.password
-      ? this.generateRandomPassword()
-      : credentials.password ?? this.generateRandomPassword();
+    const password =
+      (credentials.sessionFacebook || credentials.sessionGoogle) &&
+      !credentials.password
+        ? this.generateRandomPassword()
+        : (credentials.password ?? this.generateRandomPassword());
 
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
@@ -76,7 +78,9 @@ export class AuthService {
    * @returns {Promise<string>} The authentication token.
    * @throws {UnauthorizedError} If credentials are invalid.
    */
-  async login(credentials: LoginCredentials): Promise<string> {
+  async login(
+    credentials: LoginCredentials,
+  ): Promise<{ habeas_data: boolean; token: string }> {
     // Verificar si es login social
     if (credentials.session_network) {
       return await this.handleSocialLogin(credentials);
@@ -103,7 +107,10 @@ export class AuthService {
       expiresIn: AuthService.JWT_EXPIRES_IN,
     });
 
-    return token;
+    return {
+      habeas_data: user.habeas_data ?? false,
+      token,
+    };
   }
 
   /**
@@ -112,7 +119,9 @@ export class AuthService {
    * @returns {Promise<string>} The authentication token
    * @throws {UnauthorizedError} If social login fails
    */
-  private async handleSocialLogin(credentials: LoginCredentials): Promise<string> {
+  private async handleSocialLogin(
+    credentials: LoginCredentials,
+  ): Promise<{ habeas_data: boolean; token: string }> {
     const { email, session_network } = credentials;
 
     // TypeScript knows session_network is defined here because of the if check in login()
@@ -133,22 +142,31 @@ export class AuthService {
 
     // Validar que el usuario tenga habilitado el login social correspondiente
     if (network === SessionNetwork.GOOGLE && !user.sessionGoogle) {
-      throw new UnauthorizedError("This account is not linked to Google. Please register with Google first.");
+      throw new UnauthorizedError(
+        "This account is not linked to Google. Please register with Google first.",
+      );
     }
     if (network === SessionNetwork.FACEBOOK && !user.sessionFacebook) {
-      throw new UnauthorizedError("This account is not linked to Facebook. Please register with Facebook first.");
+      throw new UnauthorizedError(
+        "This account is not linked to Facebook. Please register with Facebook first.",
+      );
     }
 
     // Validar que el usuario haya aceptado los términos
     if (!user.habeas_data) {
-      throw new UnauthorizedError("You must accept the terms and conditions to login.");
+      throw new UnauthorizedError(
+        "You must accept the terms and conditions to login.",
+      );
     }
 
     const token = jwt.sign({ userId: user.id }, AuthService.JWT_SECRET, {
       expiresIn: AuthService.JWT_EXPIRES_IN,
     });
 
-    return token;
+    return {
+      habeas_data: user.habeas_data ?? false,
+      token,
+    };
   }
 
   /**

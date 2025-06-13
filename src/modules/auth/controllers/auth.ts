@@ -21,14 +21,18 @@ class AuthController {
   async login(req: Request, res: Response, next: NextFunction) {
     try {
       const credentials = loginSchema.parse(req.body);
-      const token = await authService.login(credentials);
+      const { habeas_data, token } = await authService.login(credentials);
 
-      res.json({
-        message: credentials.session_network
-          ? `${credentials.session_network} login successful`
-          : "Login successful",
-        token,
-      });
+      credentials?.session_network
+        ? res.json({
+            message: `${credentials.session_network} login successful`,
+            habeas_data,
+            token,
+          })
+        : res.json({
+            message: "Login successful",
+            token,
+          });
     } catch (error) {
       next(error);
     }
