@@ -31,6 +31,7 @@ model Workshop {
   phone       String
   email       String?
   logo        String?
+  nit         String?
   active      Boolean        @default(true)
   owner       User           @relation("WorkshopOwner", fields: [ownerId], references: [id])
   ownerId     String         @unique
