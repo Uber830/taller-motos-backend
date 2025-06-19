@@ -1,4 +1,4 @@
-import { PrismaClient, Workshop, User, EmployeeRole } from "@prisma/client";
+import { PrismaClient, EmployeeRole } from "@prisma/client";
 import {
   CreateWorkshopDto,
   UpdateWorkshopDto,

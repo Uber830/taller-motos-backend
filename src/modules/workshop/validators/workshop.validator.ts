@@ -26,6 +26,12 @@ export const createWorkshopSchema = z.object({
     .url({ message: "Invalid URL format for workshop logo" })
     .optional()
     .nullable(),
+  nit: z
+    .string()
+    .min(9, { message: "NIT must be at least 9 characters long" })
+    .max(10, { message: "NIT must be at most 10 characters long" })
+    .optional()
+    .nullable()
 });
 
 export const updateWorkshopSchema = createWorkshopSchema.partial();
