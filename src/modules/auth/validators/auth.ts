@@ -28,34 +28,59 @@ export const loginSchema = z
     }
   });
 
-export const registerSchema = z
-  .object({
-    sessionFacebook: z.boolean().default(false),
-    sessionGoogle: z.boolean().default(false),
-    email: z.string().email(),
-    password: z.string().min(6).optional(),
-    firstName: z.string().min(2),
-    lastName: z.string().min(2),
-    avatar: z
-      .string()
-      .url()
-      .optional()
-      .transform(val => val ?? null),
-    habeas_data: z.boolean().default(false),
-  })
-  .refine(
-    data => {
-      // Password is required if not using social auth
-      if (!data.sessionFacebook && !data.sessionGoogle && !data.password) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "Password is required when not using social authentication",
-      path: ["password"],
-    },
-  );
+// Esquema para registro tradicional (con email y password)
+export const registerTraditionalSchema = z.object({
+  sessionFacebook: z.boolean().default(false),
+  sessionGoogle: z.boolean().default(false),
+  email: z.string().email(),
+  password: z.string().min(6),
+  firstName: z.string().min(2),
+  lastName: z.string().min(2),
+  avatar: z
+    .string()
+    .url()
+    .optional()
+    .transform(val => val ?? null),
+  habeas_data: z.boolean().default(false),
+});
+
+// Esquema para registro social (con sessionFacebook o sessionGoogle)
+export const registerSocialSchema = z.object({
+  sessionFacebook: z.boolean().default(false),
+  sessionGoogle: z.boolean().default(false),
+  email: z.string().email(),
+  password: z.string().min(6).optional(),
+  firstName: z.string().optional().default("Usuario"),
+  lastName: z.string().optional().default("Social"),
+  avatar: z
+    .string()
+    .url()
+    .optional()
+    .transform(val => val ?? null),
+  habeas_data: z.boolean().default(false),
+}).refine(
+  data => data.sessionFacebook || data.sessionGoogle,
+  {
+    message: "Social registration requires sessionFacebook or sessionGoogle",
+    path: ["sessionFacebook"],
+  }
+);
+
+// Schema unificado que decide cuál usar según los datos
+export const registerSchema = z.union([
+  registerSocialSchema,
+  registerTraditionalSchema
+]);
+
+export const updateMeSchema = z.object({
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+  avatar: z.string().url().optional(),
+  sessionFacebook: z.boolean().optional(),
+  sessionGoogle: z.boolean().optional(),
+  habeas_data: z.boolean().optional(),
+});
 
 export type LoginCredentials = z.infer<typeof loginSchema>;
 export type RegisterCredentials = z.infer<typeof registerSchema>;
+export type UpdateMeCredentials = z.infer<typeof updateMeSchema>;

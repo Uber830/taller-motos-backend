@@ -42,7 +42,7 @@ export class AuthService {
     // If user is registering with social auth and no password provided, generate one
     const password =
       (credentials.sessionFacebook || credentials.sessionGoogle) &&
-      !credentials.password
+        !credentials.password
         ? this.generateRandomPassword()
         : (credentials.password ?? this.generateRandomPassword());
 
@@ -195,6 +195,29 @@ export class AuthService {
       };
     } catch {
       throw new UnauthorizedError("Invalid or expired token");
+    }
+  }
+
+  /**
+   * Public method to generate a JWT token for a user ID
+   */
+  public generateToken(userId: string): string {
+    return jwt.sign({ userId }, AuthService.JWT_SECRET, {
+      expiresIn: AuthService.JWT_EXPIRES_IN,
+    });
+  }
+
+  /**
+   * Updates user fields by userId
+   */
+  public async updateUser(userId: string, updates: Partial<User>): Promise<User> {
+    try {
+      return await prisma.user.update({
+        where: { id: userId },
+        data: updates,
+      });
+    } catch (error) {
+      throw new InternalServerError("Failed to update user");
     }
   }
 }
