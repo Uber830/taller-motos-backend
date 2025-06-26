@@ -7,19 +7,28 @@ class AuthController {
   async register(req: Request, res: Response, next: NextFunction) {
     try {
       const credentials = registerSchema.parse(req.body);
-      const user = await authService.register(credentials);
+      const result = await authService.register(credentials);
 
       const isSocialRegistration = credentials.sessionFacebook || credentials.sessionGoogle;
-      const message = isSocialRegistration
-        ? "User registered successfully (social)"
-        : "User registered successfully";
-       
+
+      // Handle case where user already exists but is trying to register with social provider
+      if (result.isExistingUser && isSocialRegistration) {
+        const token = authService.generateToken(result.user.id);
+        res.status(200).json({
+          message: "User already exists, continuing registration process",
+          user: { ...result.user, password: undefined },
+          token,
+          isExistingUser: true
+        });
+        return;
+      }
+
       // Generate token for social registration
       if (isSocialRegistration) {
-        const token = authService.generateToken(user.id);
+        const token = authService.generateToken(result.user.id);
         res.status(201).json({
-          message,
-          user: { ...user, password: undefined },
+          message: "User registered successfully (social)",
+          user: { ...result.user, password: undefined },
           token,
         });
         return;
@@ -27,8 +36,8 @@ class AuthController {
 
       // Traditional registration (without token)
       res.status(201).json({
-        message,
-        user: { ...user, password: undefined },
+        message: "User registered successfully",
+        user: { ...result.user, password: undefined },
       });
     } catch (error) {
       next(error);

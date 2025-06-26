@@ -38,7 +38,28 @@ export class AuthService {
    * @throws {ConflictError} If the email is already registered.
    * @throws {InternalServerError} For other unexpected errors.
    */
-  async register(credentials: RegisterCredentials): Promise<User> {
+  async register(credentials: RegisterCredentials): Promise<{
+    user: User;
+    isExistingUser?: boolean;
+  }> {
+    // Check if this is a social registration
+    const isSocialRegistration = credentials.sessionFacebook || credentials.sessionGoogle;
+
+    // If social registration, check if user already exists with this email
+    if (isSocialRegistration) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email: credentials.email },
+      });
+
+      // If user exists, return the existing user with a flag
+      if (existingUser) {
+        return {
+          user: existingUser,
+          isExistingUser: true,
+        };
+      }
+    }
+
     // If user is registering with social auth and no password provided, generate one
     const password =
       (credentials.sessionFacebook || credentials.sessionGoogle) &&
@@ -48,7 +69,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     try {
-      return await prisma.user.create({
+      const user = await prisma.user.create({
         data: {
           sessionFacebook: credentials.sessionFacebook,
           sessionGoogle: credentials.sessionGoogle,
@@ -60,6 +81,8 @@ export class AuthService {
           habeas_data: credentials.habeas_data,
         },
       });
+
+      return { user };
     } catch (error: unknown) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
