@@ -36,7 +36,7 @@ export const validateRequest =
         await schema.parseAsync(req.body);
       }
       next();
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ZodError) {
         next(error);
       } else {
