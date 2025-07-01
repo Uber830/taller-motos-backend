@@ -1,11 +1,16 @@
 import { Router } from "express";
 import { workshopController } from "./controllers/workshop.controller";
 import { validateRequest } from "../../core/middleware"; // Adjusted path to import from index
+import { validateFormData } from "../../core/middleware/validate-form-data.middleware";
 import {
   createWorkshopSchema,
-  updateWorkshopSchema,
+  updateWorkshopWithFileSchema,
 } from "./validators/workshop.validator";
 import { authMiddleware } from "../auth/middleware/auth";
+import {
+  uploadSingle,
+  validateFileUpload,
+} from "../../core/middleware/upload.middleware";
 
 /**
  * Routes for workshop management
@@ -33,15 +38,15 @@ router.get(
   workshopController.getWorkshopById,
 );
 
-// Update a workshop (user must be authenticated and be the owner)
 router.put(
   "/:id",
   authMiddleware,
-  validateRequest(updateWorkshopSchema),
-  workshopController.updateWorkshop,
+  uploadSingle,
+  validateFileUpload,
+  validateFormData(updateWorkshopWithFileSchema),
+  workshopController.updateWorkshopWithLogo,
 );
 
-// TODO: Add routes for managing workshop employees (WorkshopUser module)
 // Example: router.post('/:workshopId/employees', isAuthenticated, workshopEmployeeController.addEmployee);
 
 import workshopEmployeeRoutes from "../workshop-employee/workshop-employee.routes";
