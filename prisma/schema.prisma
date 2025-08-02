@@ -15,8 +15,8 @@ model User {
   password       String
   firstName      String
   lastName       String
-  phoneNumber    String?
-  dateOfBirth    DateTime
+  phoneNumber    String?        @default("")
+  dateOfBirth    DateTime?      @default(now())
   avatar         String?
   habeas_data    Boolean        @default(false)
   ownedWorkshop  Workshop?      @relation("WorkshopOwner")
