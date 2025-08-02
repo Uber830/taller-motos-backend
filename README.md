@@ -2,8 +2,7 @@
 
 # 🏍️ Taller Motos Backend
 
-[![CI](https://github.com/Uber830/taller-motos-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/Uber830/taller-motos-backend/actions/workflows/ci.yml)
-[![Bun](https://img.shields.io/badge/runtime-bun_1.x-black.svg)](https://bun.sh)
+[![Bun](https://img.shields.io/badge/Bun-1.x-black?logo=bun&logoColor=white)](https://bun.sh)
 [![TypeScript](https://img.shields.io/badge/typescript-5.x-blue.svg)](https://www.typescriptlang.org/)
 [![Express](https://img.shields.io/badge/express-4.x-green.svg)](https://expressjs.com/)
 [![Prisma](https://img.shields.io/badge/prisma-5.x-2D3748.svg)](https://www.prisma.io/)
@@ -88,21 +87,6 @@ docker compose up  # Inicia los servicios en contenedores
 - `POST /api/auth/register` - Registrar nuevo usuario
 - `POST /api/auth/logout` - Cerrar sesión
 
-## 🔒 Variables de Entorno
-
-```env
-# Servidor
-PORT=3010
-NODE_ENV=development
-
-# Base de datos
-DATABASE_URL="postgresql://usuario:contraseña@localhost:5432/taller_motos"
-
-# JWT
-JWT_SECRET=tu_secreto_jwt
-JWT_EXPIRES_IN=24h
-```
-
 ## 🛠️ Docker
 
 El proyecto incluye configuración Docker para desarrollo y producción:
@@ -117,33 +101,8 @@ docker build --target production -t taller-motos-backend:prod .
 docker run -p 3010:3010 --env-file .env taller-motos-backend:prod
 ```
 
+El enfoque es que el backend sea un API REST que se conecte a la base de datos y que se pueda usar en el frontend. Manteniendo la simplicidad y funcionalidad core sin feaures adicionales complejas.
+
 ## 📘 Licencia
 
 Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
-
-We also have performance testing with [k6](https://k6.io/), if you want to run it via docker, execute:
-
-```bash
-docker-compose up k6
-```
-
-Or if you want to run it from your machine, execute:
-
-```bash
-brew install k6
-node --run test:performance
-```
-
-## 💅 Linting
-
-To run the linter you can execute:
-
-```bash
-node --run lint
-```
-
-And for trying to fix lint issues automatically, you can run:
-
-```bash
-node --run lint:fix
-```
