@@ -5,6 +5,6 @@ export const updateUserSchema = z.object({
     lastName: z.string().min(1).max(50).optional(),
     phoneNumber: z.string().min(1).max(50).optional(),
     email: z.string().email().optional(),
-    dateOfBirth: z.date().optional(),
+    dateOfBirth: z.string().optional(),
     avatar: z.string().optional(),
 });

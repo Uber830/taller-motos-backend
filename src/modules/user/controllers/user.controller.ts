@@ -7,10 +7,11 @@ export class UserController {
     async updateMe(req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> {
         try {
             const userId = String(req.user?.id);
+            req.body.dateOfBirth = new Date(req.body.dateOfBirth);
             const updatedUser = await userService.updateUser(userId, req.body as UpdateUserDto);
             res.status(200).json(updatedUser);
         } catch (error: unknown) {
-            next(  error);
+            next(error);
         }
     }
 }
