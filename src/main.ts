@@ -10,6 +10,7 @@ import { authMiddleware } from "./modules/auth/middleware/auth";
 import authRoutes from "./modules/auth/routes";
 import workshopRoutes from "./modules/workshop/workshop.routes";
 import { userRoutes } from "./modules/user";
+import customerRoutes from "./modules/customer/customer.routes";
 
 const app = express();
 app.use(express.json());
@@ -21,17 +22,13 @@ app.use(
   }),
 );
 
-// Auth routes
 app.use("/api/auth", authRoutes);
-
-// User routes
 app.use("/api/users", userRoutes);
 
-// Protected routes
 app.use("/api", authMiddleware);
 
-// Workshop routes (protected)
 app.use("/api/workshops", workshopRoutes);
+app.use("/api/customers", customerRoutes);
 
 // Admin routes
 //app.use('/api/admin', adminMiddleware, adminRoutes);
