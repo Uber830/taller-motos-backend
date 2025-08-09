@@ -1,21 +1,9 @@
 export { customerController } from "./controllers/customer.controller";
-export { customerMotorcycleController } from "./controllers/customer-motorcycle.controller";
+export { customerVehicleController } from "./controllers/customer-vehicle.controller";
 export * from "./interfaces/customer.interface";
-export * from "./interfaces/customer-motorcycle.interface";
+export * from "./interfaces/customer-vehicle.interface";
 export * from "./services/customer.service";
-export * from "./services/customer-motorcycle.service";
+export * from "./services/customer-vehicle.service";
 export * from "./validators/customer.validator";
-export * from "./validators/customer-motorcycle.validator";
+export * from "./validators/customer-vehicle.validator";
 export { default as customerRoutes } from "./customer.routes";
-
-// Module documentation
-export const CUSTOMER_MODULE_INFO = {
-    name: "Customer Management",
-    version: "1.0.0",
-    description: "Gestión completa de clientes y motocicletas para talleres de motos",
-    endpoints: {
-        customers: "/api/customers",
-        motorcycles: "/api/customers/:customerId/motorcycles",
-        stats: "/api/customers/stats"
-    }
-}; 

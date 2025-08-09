@@ -1,15 +1,15 @@
 import { Router } from "express";
 import { customerController } from "./controllers/customer.controller";
-// import { customerMotorcycleController } from "./controllers/customer-motorcycle.controller";
+import { customerVehicleController } from "./controllers/customer-vehicle.controller";
 import { validateRequest } from "../../core/middleware";
 import {
     createCustomerSchema,
     updateCustomerSchema,
 } from "./validators/customer.validator";
-// import {
-//     createMotorcycleSchema,
-//     updateMotorcycleSchema,
-// } from "./validators/customer-motorcycle.validator";
+import {
+    createVehicleSchema,
+    updateVehicleSchema,
+} from "./validators/customer-vehicle.validator";
 import { authMiddleware } from "../auth/middleware/auth";
 
 /**
@@ -50,28 +50,28 @@ router.route("/:id")
         customerController.deleteCustomer
     );
 
-// Customer motorcycles routes
-// router.route("/:customerId/motorcycles")
-//     .post(
-//         validateRequest(createMotorcycleSchema),
-//         customerMotorcycleController.createMotorcycle
-//     )
-//     .get(
-//         customerMotorcycleController.getCustomerMotorcycles
-//     );
+// Customer vehicles routes
+router.route("/:customerId/vehicles")
+    .post(
+        validateRequest(createVehicleSchema),
+        customerVehicleController.createVehicle
+    )
+    .get(
+        customerVehicleController.getCustomerVehicles
+    );
 
-// Customer motorcycle by id routes
-// router.route("/motorcycles/:id")
-//     .get(
-//         customerMotorcycleController.getMotorcycleById
-//     )
-//     .put(
-//         validateRequest(updateMotorcycleSchema),
-//         customerMotorcycleController.updateMotorcycle
-//     )
-//     .delete(
-//         customerMotorcycleController.deleteMotorcycle
-//     );
+// Customer vehicle by id routes
+router.route("/vehicles/:id")
+    .get(
+        customerVehicleController.getVehicleById
+    )
+    .put(
+        validateRequest(updateVehicleSchema),
+        customerVehicleController.updateVehicle
+    )
+    .delete(
+        customerVehicleController.deleteVehicle
+    );
 
 
 export default router; 

@@ -34,18 +34,20 @@ export interface CustomerWithVehicles {
     email: string | null;
     phone: string;
     address: string | null;
+    notes: string | null;
     createdAt: Date;
     updatedAt: Date;
-    motorcycles: {
+    vehicles: {
         id: string;
         brand: string;
         model: string;
         year: number;
         plate: string;
         color: string;
+        type: 'MOTORCYCLE' | 'CAR';
     }[];
     _count: {
-        motorcycles: number;
+        vehicles: number;
         workOrders: number;
     };
 } 

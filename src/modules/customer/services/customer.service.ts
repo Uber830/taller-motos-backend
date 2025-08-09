@@ -119,7 +119,7 @@ export class CustomerService {
                 },
             },
             include: {
-                motorcycles: {
+                vehicles: {
                     select: {
                         id: true,
                         brand: true,
@@ -127,11 +127,12 @@ export class CustomerService {
                         year: true,
                         plate: true,
                         color: true,
+                        type: true,
                     },
                 },
                 _count: {
                     select: {
-                        motorcycles: true,
+                        vehicles: true,
                         workOrders: true,
                     },
                 },
@@ -155,7 +156,7 @@ export class CustomerService {
                 workshopId: workshopId,
             },
             include: {
-                motorcycles: {
+                vehicles: {
                     select: {
                         id: true,
                         brand: true,
@@ -163,11 +164,12 @@ export class CustomerService {
                         year: true,
                         plate: true,
                         color: true,
+                        type: true,
                     },
                 },
                 _count: {
                     select: {
-                        motorcycles: true,
+                        vehicles: true,
                         workOrders: true,
                     },
                 },
@@ -191,7 +193,7 @@ export class CustomerService {
         const customer = await prisma.customer.findUnique({
             where: { id: customerId },
             include: {
-                motorcycles: {
+                vehicles: {
                     select: {
                         id: true,
                         brand: true,
@@ -199,11 +201,12 @@ export class CustomerService {
                         year: true,
                         plate: true,
                         color: true,
+                        type: true,
                     },
                 },
                 _count: {
                     select: {
-                        motorcycles: true,
+                        vehicles: true,
                         workOrders: true,
                     },
                 },
@@ -268,7 +271,7 @@ export class CustomerService {
             where: { id: customerId },
             data: customerData,
             include: {
-                motorcycles: {
+                vehicles: {
                     select: {
                         id: true,
                         brand: true,
@@ -276,11 +279,12 @@ export class CustomerService {
                         year: true,
                         plate: true,
                         color: true,
+                        type: true,
                     },
                 },
                 _count: {
                     select: {
-                        motorcycles: true,
+                        vehicles: true,
                         workOrders: true,
                     },
                 },
@@ -349,7 +353,7 @@ export class CustomerService {
             prisma.customer.count({
                 where: {
                     workshopId,
-                    motorcycles: {
+                    vehicles: {
                         some: {},
                     },
                 },
@@ -370,7 +374,7 @@ export class CustomerService {
                     },
                 },
             }),
-            prisma.motorcycle.count({
+            prisma.vehicle.count({
                 where: {
                     customer: {
                         workshopId,
