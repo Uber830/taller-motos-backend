@@ -21,6 +21,9 @@ export interface User {
 export interface LoginCredentials {
   email: string;
   password?: string;
+  sessionFacebook?: boolean;
+  sessionGoogle?: boolean;
+  socialToken?: string; // Token proporcionado por la red social
   session_network?: SessionNetwork;
 }
 
