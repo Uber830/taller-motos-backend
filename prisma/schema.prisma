@@ -1,84 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
-  id             String         @id @default(cuid())
-  sessionFacebook Boolean        @default(false)
-  sessionGoogle   Boolean        @default(false)
-  email          String         @unique
-  password       String
-  firstName      String
-  lastName       String
-  phoneNumber    String?        @default("")
-  dateOfBirth    DateTime?      @default(now())
-  avatar         String?
-  habeas_data    Boolean        @default(false)
-  ownedWorkshop  Workshop?      @relation("WorkshopOwner")
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  avatar          String?
+  firstName       String
+  habeas_data     Boolean   @default(false)
+  lastName        String
+  sessionFacebook Boolean   @default(false)
+  sessionGoogle   Boolean   @default(false)
+  dateOfBirth     DateTime? @default(now())
+  phoneNumber     String?   @default("")
+  ownedWorkshop   Workshop? @relation("WorkshopOwner")
 
   @@map("users")
 }
 
 model Workshop {
-  id          String         @id @default(cuid())
-  name        String
-  address     String
-  phone       String
-  email       String?
-  logo        String?
-  nit         String?
-  active      Boolean        @default(true)
-  owner       User           @relation("WorkshopOwner", fields: [ownerId], references: [id])
-  ownerId     String         @unique
-  employees   WorkshopEmployeeInfo[] @relation("WorkshopInternalEmployees")
-  customers   Customer[]
-  workOrders  WorkOrder[]
-  services    Service[]
-  supplies    Supply[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id         String                 @id @default(cuid())
+  name       String
+  address    String
+  phone      String
+  email      String?
+  logo       String?
+  active     Boolean                @default(true)
+  ownerId    String                 @unique
+  createdAt  DateTime               @default(now())
+  updatedAt  DateTime               @updatedAt
+  nit        String?
+  customers  Customer[]
+  services   Service[]
+  supplies   Supply[]
+  workOrders WorkOrder[]
+  employees  WorkshopEmployeeInfo[] @relation("WorkshopInternalEmployees")
+  owner      User                   @relation("WorkshopOwner", fields: [ownerId], references: [id])
 
   @@map("workshops")
 }
 
 model Customer {
-  id          String      @id @default(cuid())
+  id          String       @id @default(cuid())
   firstName   String
   lastName    String
   email       String?
   phone       String
   address     String?
-  workshop    Workshop    @relation(fields: [workshopId], references: [id])
   workshopId  String
-  motorcycles Motorcycle[]
-  workOrders  WorkOrder[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  notes       String?
+  workshop    Workshop     @relation(fields: [workshopId], references: [id])
+  vehicles   Vehicle[]
+  workOrders WorkOrder[]
 
   @@map("customers")
 }
 
-model Motorcycle {
-  id          String     @id @default(cuid())
-  brand       String
-  model       String
-  year        Int
-  plate       String
-  color       String
-  customer    Customer   @relation(fields: [customerId], references: [id])
-  customerId  String
-  workOrders  WorkOrder[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+model Vehicle {
+  id         String      @id @default(cuid())
+  brand      String
+  model      String
+  year       Int
+  plate      String
+  color      String
+  type       VehicleType @default(MOTORCYCLE)
+  customerId String
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  customer   Customer    @relation(fields: [customerId], references: [id])
+  workOrders WorkOrder[]
 
-  @@map("motorcycles")
+  @@map("vehicles")
 }
 
 model Service {
@@ -86,59 +88,59 @@ model Service {
   name        String
   description String?
   price       Float
-  workshop    Workshop    @relation(fields: [workshopId], references: [id])
   workshopId  String
-  workOrders  WorkOrder[]
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+  workshop    Workshop    @relation(fields: [workshopId], references: [id])
+  workOrders  WorkOrder[]
 
   @@map("services")
 }
 
 model WorkOrder {
-  id          String     @id @default(cuid())
-  status      OrderStatus @default(PENDING)
-  workshop    Workshop   @relation(fields: [workshopId], references: [id])
-  workshopId  String
-  customer    Customer   @relation(fields: [customerId], references: [id])
-  customerId  String
-  motorcycle  Motorcycle @relation(fields: [motorcycleId], references: [id])
-  motorcycleId String
-  service     Service    @relation(fields: [serviceId], references: [id])
-  serviceId   String
-  description String?
-  supplies    SupplyOnWorkOrder[]
-  total       Float
-  invoice     Invoice?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id           String              @id @default(cuid())
+  status       OrderStatus         @default(PENDING)
+  workshopId   String
+  customerId   String
+  vehicleId    String
+  serviceId    String
+  description  String?
+  total        Float
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+  invoice      Invoice?
+  supplies     SupplyOnWorkOrder[]
+  customer     Customer            @relation(fields: [customerId], references: [id])
+  vehicle      Vehicle             @relation(fields: [vehicleId], references: [id])
+  service      Service             @relation(fields: [serviceId], references: [id])
+  workshop     Workshop            @relation(fields: [workshopId], references: [id])
 
   @@map("work_orders")
 }
 
 model Supply {
-  id          String    @id @default(cuid())
+  id          String              @id @default(cuid())
   name        String
   description String?
   price       Float
-  stock       Int       @default(0)
-  workshop    Workshop   @relation(fields: [workshopId], references: [id])
+  stock       Int                 @default(0)
   workshopId  String
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  workshop    Workshop            @relation(fields: [workshopId], references: [id])
   workOrders  SupplyOnWorkOrder[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
 
   @@map("supplies")
 }
 
 model SupplyOnWorkOrder {
-  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
   workOrderId String
-  supply      Supply     @relation(fields: [supplyId], references: [id])
-  supplyId      String
+  supplyId    String
   quantity    Int
   price       Float
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
+  supply      Supply    @relation(fields: [supplyId], references: [id])
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
 
   @@id([workOrderId, supplyId])
   @@map("supplies_on_work_orders")
@@ -146,28 +148,28 @@ model SupplyOnWorkOrder {
 
 model Invoice {
   id          String    @id @default(cuid())
-  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
   workOrderId String    @unique
   total       Float
   paid        Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
 
   @@map("invoices")
 }
 
 model WorkshopEmployeeInfo {
-  id         String   @id @default(cuid())
+  id         String       @id @default(cuid())
   firstName  String
   lastName   String
-  email      String? // Not for login, just informational
+  email      String?
   phone      String?
   role       EmployeeRole
-  active     Boolean  @default(true)
-  workshop   Workshop @relation("WorkshopInternalEmployees", fields: [workshopId], references: [id])
+  active     Boolean      @default(true)
   workshopId String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  workshop   Workshop     @relation("WorkshopInternalEmployees", fields: [workshopId], references: [id])
 
   @@map("workshop_employee_info")
 }
@@ -175,6 +177,11 @@ model WorkshopEmployeeInfo {
 enum EmployeeRole {
   ADMIN
   MECHANIC
+}
+
+enum VehicleType {
+  MOTORCYCLE
+  CAR
 }
 
 enum OrderStatus {
