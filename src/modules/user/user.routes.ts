@@ -6,6 +6,11 @@ import { updateUserSchema } from "./validators/user.validator";
 
 const router = Router();
 
-router.patch("/me", authMiddleware, validateRequest(updateUserSchema), userController.updateMe);
+router.use(authMiddleware);
 
-export default router;
+router
+  .route("/me")
+  .get(userController.getMe)
+  .patch(validateRequest(updateUserSchema), userController.updateMe);
+
+export default router; 

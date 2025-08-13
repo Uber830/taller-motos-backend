@@ -16,6 +16,17 @@ export class UserService {
             throw new InternalServerError("Failed to update user");
         }
     }
+
+    async getUserById(userId: string) {
+        try {
+            const user = await prisma.user.findUnique({
+                where: { id: userId },
+            });
+            return user;
+        } catch (error) {
+            throw new InternalServerError("Failed to get user");
+        }
+    }
 }
 
 export const userService = new UserService(); 
