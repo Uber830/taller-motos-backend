@@ -232,10 +232,9 @@ export class WorkshopService {
       totalEmployees: workshop.employees.length,
       recentWorkOrders: workshop.workOrders.length,
       lowStockSupplies: workshop.supplies.length,
-      totalRevenue: workshop.workOrders.reduce(
-        (sum, order) => sum + order.total,
-        0,
-      ),
+      totalRevenue: workshop.workOrders
+        .map(order => Number(order.total))
+        .reduce((sum, total) => sum + total, 0),
     };
   }
 
