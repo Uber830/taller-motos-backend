@@ -84,36 +84,38 @@ model Vehicle {
 }
 
 model Service {
-  id          String      @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
-  description String?
-  price       Float
   workshopId  String
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  workshop    Workshop    @relation(fields: [workshopId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  workshop    Workshop @relation(fields: [workshopId], references: [id])
   workOrders  WorkOrder[]
 
   @@map("services")
 }
 
 model WorkOrder {
-  id           String              @id @default(cuid())
-  status       OrderStatus         @default(PENDING)
-  workshopId   String
-  customerId   String
-  vehicleId    String
-  serviceId    String
-  description  String?
-  total        Float
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
-  invoice      Invoice?
-  supplies     SupplyOnWorkOrder[]
-  customer     Customer            @relation(fields: [customerId], references: [id])
-  vehicle      Vehicle             @relation(fields: [vehicleId], references: [id])
-  service      Service             @relation(fields: [serviceId], references: [id])
-  workshop     Workshop            @relation(fields: [workshopId], references: [id])
+  id              String              @id @default(cuid())
+  status          OrderStatus         @default(PENDING)
+  priority        OrderPriority       @default(MEDIUM)
+  workshopId      String
+  customerId      String
+  vehicleId       String
+  serviceId       String
+  mechanic        String              // nombre del mecánico asignado
+  description     String
+  additionalNotes String?
+  total           Decimal
+  startDate       DateTime            @default(now())
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  invoice         Invoice?
+  supplies        SupplyOnWorkOrder[]
+  customer        Customer            @relation(fields: [customerId], references: [id])
+  vehicle         Vehicle             @relation(fields: [vehicleId], references: [id])
+  service         Service             @relation(fields: [serviceId], references: [id])
+  workshop        Workshop            @relation(fields: [workshopId], references: [id])
 
   @@map("work_orders")
 }
@@ -122,7 +124,7 @@ model Supply {
   id          String              @id @default(cuid())
   name        String
   description String?
-  price       Float
+  price       Decimal
   stock       Int                 @default(0)
   workshopId  String
   createdAt   DateTime            @default(now())
@@ -134,22 +136,21 @@ model Supply {
 }
 
 model SupplyOnWorkOrder {
+  id          String    @id @default(cuid())
   workOrderId String
   supplyId    String
   quantity    Int
-  price       Float
   createdAt   DateTime  @default(now())
   supply      Supply    @relation(fields: [supplyId], references: [id])
   workOrder   WorkOrder @relation(fields: [workOrderId], references: [id])
 
-  @@id([workOrderId, supplyId])
   @@map("supplies_on_work_orders")
 }
 
 model Invoice {
   id          String    @id @default(cuid())
   workOrderId String    @unique
-  total       Float
+  total       Decimal
   paid        Boolean   @default(false)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -189,4 +190,11 @@ enum OrderStatus {
   IN_PROGRESS
   COMPLETED
   CANCELLED
+}
+
+enum OrderPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
 }
