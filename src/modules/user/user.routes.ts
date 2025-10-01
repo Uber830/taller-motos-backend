@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { userController } from "./controllers/user.controller";
+import {
+  getMeController,
+  updateMeController,
+} from "./controllers/user.controller";
 import { authMiddleware } from "../auth/middleware/auth";
 import { validateRequest } from "../../core/middleware/validate-request.middleware";
 import { updateUserSchema } from "./validators/user.validator";
@@ -10,7 +13,7 @@ router.use(authMiddleware);
 
 router
   .route("/me")
-  .get(userController.getMe)
-  .patch(validateRequest(updateUserSchema), userController.updateMe);
+  .get(getMeController)
+  .patch(validateRequest(updateUserSchema), updateMeController);
 
-export default router; 
+export default router;
