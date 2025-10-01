@@ -1,6 +1,11 @@
 import { Router } from "express";
-import { workshopController } from "./controllers/workshop.controller";
-import { validateRequest } from "../../core/middleware"; // Adjusted path to import from index
+import {
+  createWorkshopController,
+  getMyWorkshopController,
+  getWorkshopByIdController,
+  updateWorkshopWithLogoController,
+} from "./controllers/workshop.controller";
+import { validateRequest } from "../../core/middleware";
 import { validateFormData } from "../../core/middleware/validate-form-data.middleware";
 import {
   createWorkshopSchema,
@@ -25,17 +30,17 @@ router.post(
   "/",
   authMiddleware,
   validateRequest(createWorkshopSchema),
-  workshopController.createWorkshop,
+  createWorkshopController,
 );
 
 // Get the workshop owned by the authenticated user
-router.get("/my-workshop", authMiddleware, workshopController.getMyWorkshop);
+router.get("/my-workshop", authMiddleware, getMyWorkshopController);
 
 // Get a specific workshop by ID (publicly accessible or add auth if needed)
 router.get(
   "/:id",
   // isAuthenticated, // Uncomment if only authenticated users can view any workshop
-  workshopController.getWorkshopById,
+  getWorkshopByIdController,
 );
 
 router.put(
@@ -44,7 +49,7 @@ router.put(
   uploadSingle,
   validateFileUpload,
   validateFormData(updateWorkshopWithFileSchema),
-  workshopController.updateWorkshopWithLogo,
+  updateWorkshopWithLogoController,
 );
 
 // Example: router.post('/:workshopId/employees', isAuthenticated, workshopEmployeeController.addEmployee);
