@@ -1,11 +1,14 @@
 import { NextFunction, Request, Response } from "express";
+import { UserRole } from "../../user/types/user.types";
 
-import { AuthService } from "../services/auth";
+import { validateToken } from "../services/auth";
 
 import { AuthenticatedUser } from "../types";
 
 export interface AuthenticatedRequest extends Request {
   user?: AuthenticatedUser;
+  workshopId?: string;
+  userRole?: UserRole;
 }
 
 export const authMiddleware = async (
@@ -20,8 +23,7 @@ export const authMiddleware = async (
       throw new Error("No token provided");
     }
 
-    const authService = new AuthService();
-    const user = await authService.validateToken(token);
+    const user = await validateToken(token);
 
     req.user = user;
     next();

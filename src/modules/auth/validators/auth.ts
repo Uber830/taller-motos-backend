@@ -22,7 +22,8 @@ export const loginSchema = z
     if (!data.password) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Password is required for email login when not using social authentication",
+        message:
+          "Password is required for email login when not using social authentication",
         path: ["password"],
       });
     }
@@ -45,31 +46,30 @@ export const registerTraditionalSchema = z.object({
 });
 
 // Esquema para registro social (con sessionFacebook o sessionGoogle)
-export const registerSocialSchema = z.object({
-  sessionFacebook: z.boolean().default(false),
-  sessionGoogle: z.boolean().default(false),
-  email: z.string().email(),
-  password: z.string().min(6).optional(),
-  firstName: z.string().optional().default("Usuario"),
-  lastName: z.string().optional().default("Social"),
-  avatar: z
-    .string()
-    .url()
-    .optional()
-    .transform(val => val ?? null),
-  habeas_data: z.boolean().default(false),
-}).refine(
-  data => data.sessionFacebook || data.sessionGoogle,
-  {
+export const registerSocialSchema = z
+  .object({
+    sessionFacebook: z.boolean().default(false),
+    sessionGoogle: z.boolean().default(false),
+    email: z.string().email(),
+    password: z.string().min(6).optional(),
+    firstName: z.string().optional().default("Usuario"),
+    lastName: z.string().optional().default("Social"),
+    avatar: z
+      .string()
+      .url()
+      .optional()
+      .transform(val => val ?? null),
+    habeas_data: z.boolean().default(false),
+  })
+  .refine(data => data.sessionFacebook || data.sessionGoogle, {
     message: "Social registration requires sessionFacebook or sessionGoogle",
     path: ["sessionFacebook"],
-  }
-);
+  });
 
 // Schema unificado que decide cuál usar según los datos
 export const registerSchema = z.union([
   registerSocialSchema,
-  registerTraditionalSchema
+  registerTraditionalSchema,
 ]);
 
 export const updateMeSchema = z.object({
