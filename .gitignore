@@ -7,6 +7,12 @@ coverage/
 .npm
 .vscode
 .nyc_output
+.cursor
 k6-results
 prisma/client
 prisma/seed.ts
+
+# Temporary files
+src/modules/customer/examples/customer-api-examples.md
+src/modules/customer/examples/customer-vehicle-api-examples.md
+src/modules/customer/README.md
