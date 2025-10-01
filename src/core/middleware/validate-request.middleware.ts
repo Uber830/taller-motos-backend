@@ -12,23 +12,25 @@ import { logger } from "../logger";
  * @returns Express middleware function.
  */
 export const validateRequest =
-  (
-    schema: ZodTypeAny, // Changed from AnyZodObject to ZodTypeAny
-  ) =>
+  (schema: ZodTypeAny) =>
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (schema instanceof ZodObject) {
-        // Check if it's a ZodObject (potentially composite or direct body schema)
-        const shape = schema.shape; // Safe to access .shape now
+        // Check if it's a ZodObject
+        const shape = schema.shape as {
+          body?: ZodTypeAny;
+          query?: ZodTypeAny;
+          params?: ZodTypeAny;
+        };
         if (shape.body || shape.query || shape.params) {
-          // Composite schema: validate specific parts of the request
+          // Validate specific parts of the request
           await schema.parseAsync({
-            body: req.body,
-            query: req.query,
-            params: req.params,
+            body: req.body as Record<string, unknown>,
+            query: req.query as Record<string, unknown>,
+            params: req.params as Record<string, unknown>,
           });
         } else {
-          // Direct ZodObject schema: assume it's for req.body
+          // Direct ZodObject schema: assume it's for req.body.
           await schema.parseAsync(req.body);
         }
       } else {

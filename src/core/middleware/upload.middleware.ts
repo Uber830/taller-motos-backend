@@ -42,7 +42,7 @@ export const uploadSingle = (
   res: Response,
   next: NextFunction,
 ): void => {
-  multerUpload(req, res, err => {
+  void multerUpload(req, res, err => {
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_SIZE") {
         res.status(400).json({
