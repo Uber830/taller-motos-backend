@@ -1,9 +1,13 @@
-import { Request, Response, NextFunction } from "express";
-import { customerService } from "../services/customer.service";
+import { Response, NextFunction } from "express";
 import {
-    CreateCustomerDto,
-    UpdateCustomerDto,
-} from "../interfaces/customer.interface";
+  createCustomer,
+  getCustomersByWorkshop,
+  getCustomerById,
+  updateCustomer,
+  deleteCustomer,
+  getCustomerStats,
+} from "../services/customer.service";
+import { CreateCustomerDto, UpdateCustomerDto } from "../types/customer.types";
 import { AuthenticatedRequest } from "../../auth/middleware/auth";
 import { NotFoundError } from "../../../core/errors";
 
@@ -12,147 +16,168 @@ import { NotFoundError } from "../../../core/errors";
  * @module customer/controller
  * @category Controllers
  */
-class CustomerController {
-    /**
-     * Creates a new customer for a workshop.
-     * @param {AuthenticatedRequest} req - The Express request object, authenticated.
-     * @param {Response} res - The Express response object.
-     * @param {NextFunction} next - The Express next middleware function.
-     */
-    async createCustomer(
-        req: AuthenticatedRequest,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> {
-        try {
-            const userId = req.user!.id;
-            const customerData: CreateCustomerDto = req.body;
-            const newCustomer = await customerService.createCustomer(
-                userId,
-                customerData,
-            );
 
-            res.status(201).json(newCustomer);
-        } catch (error: unknown) {
-            next(error);
-        }
+/**
+ * Creates a new customer for a workshop.
+ * @param {AuthenticatedRequest} req - The Express request object, authenticated.
+ * @param {Response} res - The Express response object.
+ * @param {NextFunction} next - The Express next middleware function.
+ */
+export const createCustomerController = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
     }
 
-    /**
-     * Gets all customers for the authenticated user's workshop.
-     * @param {AuthenticatedRequest} req - The Express request object, authenticated.
-     * @param {Response} res - The Express response object.
-     * @param {NextFunction} next - The Express next middleware function.
-     */
-    async getCustomers(
-        req: AuthenticatedRequest,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> {
-        try {
-            const userId = req.user!.id;
-            const customers = await customerService.getCustomersByWorkshop(userId);
-            res.status(200).json(customers);
-        } catch (error: unknown) {
-            next(error);
-        }
+    const customerData: CreateCustomerDto = req.body as CreateCustomerDto;
+    const newCustomer = await createCustomer(userId, customerData);
+
+    res.status(201).json(newCustomer);
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+/**
+ * Gets all customers for the authenticated user's workshop.
+ * @param {AuthenticatedRequest} req - The Express request object, authenticated.
+ * @param {Response} res - The Express response object.
+ * @param {NextFunction} next - The Express next middleware function.
+ */
+export const getCustomersController = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
     }
 
-    /**
-     * Gets a specific customer by ID.
-     * @param {Request} req - The Express request object.
-     * @param {Response} res - The Express response object.
-     * @param {NextFunction} next - The Express next middleware function.
-     */
-    async getCustomerById(
-        req: AuthenticatedRequest,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> {
-        try {
-            const { id } = req.params;
-            const customer = await customerService.getCustomerById(id);
-            if (!customer) {
-                throw new NotFoundError("Customer not found");
-            }
-            res.status(200).json(customer);
-        } catch (error: unknown) {
-            next(error);
-        }
+    const customers = await getCustomersByWorkshop(userId);
+    res.status(200).json(customers);
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+/**
+ * Gets a specific customer by ID.
+ * @param {AuthenticatedRequest} req - The Express request object, authenticated.
+ * @param {Response} res - The Express response object.
+ * @param {NextFunction} next - The Express next middleware function.
+ */
+export const getCustomerByIdController = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const { id } = req.params as { id: string };
+    if (!id) {
+      res.status(400).json({ message: "Customer ID is required" });
+      return;
     }
 
-    /**
-     * Updates a customer.
-     * @param {AuthenticatedRequest} req - The Express request object, authenticated.
-     * @param {Response} res - The Express response object.
-     * @param {NextFunction} next - The Express next middleware function.
-     */
-    async updateCustomer(
-        req: AuthenticatedRequest,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> {
-        try {
-            const userId = req.user!.id;
+    const customer = await getCustomerById(id);
+    if (!customer) {
+      throw new NotFoundError("Customer not found");
+    }
+    res.status(200).json(customer);
+  } catch (error: unknown) {
+    next(error);
+  }
+};
 
-            const { id: customerId } = req.params;
-            const customerData: UpdateCustomerDto = req.body;
-
-            const updatedCustomer = await customerService.updateCustomer(
-                customerId,
-                userId,
-                customerData,
-            );
-
-            res.status(200).json(updatedCustomer);
-        } catch (error: unknown) {
-            next(error);
-        }
+/**
+ * Updates a customer.
+ * @param {AuthenticatedRequest} req - The Express request object, authenticated.
+ * @param {Response} res - The Express response object.
+ * @param {NextFunction} next - The Express next middleware function.
+ */
+export const updateCustomerController = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
     }
 
-    /**
-     * Deletes a customer.
-     * @param {AuthenticatedRequest} req - The Express request object, authenticated.
-     * @param {Response} res - The Express response object.
-     * @param {NextFunction} next - The Express next middleware function.
-     */
-    async deleteCustomer(
-        req: AuthenticatedRequest,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> {
-        try {
-            const userId = req.user!.id;
+    const { id: customerId } = req.params as { id: string };
+    const customerData: UpdateCustomerDto = req.body as UpdateCustomerDto;
 
-            const { id: customerId } = req.params;
-            await customerService.deleteCustomer(customerId, userId);
+    const updatedCustomer = await updateCustomer(
+      customerId,
+      userId,
+      customerData,
+    );
 
-            res.status(200).json({ message: "Customer deleted successfully" });
-        } catch (error: unknown) {
-            next(error);
-        }
+    res.status(200).json(updatedCustomer);
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+/**
+ * Deletes a customer.
+ * @param {AuthenticatedRequest} req - The Express request object, authenticated.
+ * @param {Response} res - The Express response object.
+ * @param {NextFunction} next - The Express next middleware function.
+ */
+export const deleteCustomerController = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
     }
 
-    /**
-     * Gets customer statistics for the workshop.
-     * @param {AuthenticatedRequest} req - The Express request object, authenticated.
-     * @param {Response} res - The Express response object.
-     * @param {NextFunction} next - The Express next middleware function.
-     */
-    async getCustomerStats(
-        req: AuthenticatedRequest,
-        res: Response,
-        next: NextFunction,
-    ): Promise<void> {
-        try {
-            const userId = req.user!.id;
+    const { id: customerId } = req.params as { id: string };
+    await deleteCustomer(customerId, userId);
 
-            const stats = await customerService.getCustomerStats(userId);
-            res.status(200).json(stats);
-        } catch (error: unknown) {
-            next(error);
-        }
+    res.status(200).json({ message: "Customer deleted successfully" });
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+/**
+ * Gets customer statistics for the workshop.
+ * @param {AuthenticatedRequest} req - The Express request object, authenticated.
+ * @param {Response} res - The Express response object.
+ * @param {NextFunction} next - The Express next middleware function.
+ */
+export const getCustomerStatsController = async (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
     }
-}
 
-export const customerController = new CustomerController(); 
+    const stats = await getCustomerStats(userId);
+    res.status(200).json(stats);
+  } catch (error: unknown) {
+    next(error);
+  }
+};

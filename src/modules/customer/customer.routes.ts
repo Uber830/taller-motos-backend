@@ -1,14 +1,27 @@
 import { Router } from "express";
-import { customerController } from "./controllers/customer.controller";
-import { customerVehicleController } from "./controllers/customer-vehicle.controller";
+import {
+  createCustomerController,
+  getCustomersController,
+  getCustomerByIdController,
+  updateCustomerController,
+  deleteCustomerController,
+  getCustomerStatsController,
+} from "./controllers/customer.controller";
+import {
+  createVehicleController,
+  getCustomerVehiclesController,
+  getVehicleByIdController,
+  updateVehicleController,
+  deleteVehicleController,
+} from "./controllers/customer-vehicle.controller";
 import { validateRequest } from "../../core/middleware";
 import {
-    createCustomerSchema,
-    updateCustomerSchema,
+  createCustomerSchema,
+  updateCustomerSchema,
 } from "./validators/customer.validator";
 import {
-    createVehicleSchema,
-    updateVehicleSchema,
+  createVehicleSchema,
+  updateVehicleSchema,
 } from "./validators/customer-vehicle.validator";
 import { authMiddleware } from "../auth/middleware/auth";
 
@@ -21,57 +34,33 @@ import { authMiddleware } from "../auth/middleware/auth";
 const router = Router();
 
 // Customer routes
-router.use(authMiddleware)
-router.route("/")
-    .post(
-        validateRequest(createCustomerSchema),
-        customerController.createCustomer
-    )
-    .get(
-        customerController.getCustomers
-    );
+router.use(authMiddleware);
+router
+  .route("/")
+  .post(validateRequest(createCustomerSchema), createCustomerController)
+  .get(getCustomersController);
 
 // Customer stats routes
-router.route("/stats")
-    .get(
-        customerController.getCustomerStats
-    );
+router.route("/stats").get(getCustomerStatsController);
 
 // Customer by id routes
-router.route("/:id")
-    .get(
-        customerController.getCustomerById
-    )
-    .put(
-        validateRequest(updateCustomerSchema),
-        customerController.updateCustomer
-    )
-    .delete(
-        customerController.deleteCustomer
-    );
+router
+  .route("/:id")
+  .get(getCustomerByIdController)
+  .put(validateRequest(updateCustomerSchema), updateCustomerController)
+  .delete(deleteCustomerController);
 
 // Customer vehicles routes
-router.route("/:customerId/vehicles")
-    .post(
-        validateRequest(createVehicleSchema),
-        customerVehicleController.createVehicle
-    )
-    .get(
-        customerVehicleController.getCustomerVehicles
-    );
+router
+  .route("/:customerId/vehicles")
+  .post(validateRequest(createVehicleSchema), createVehicleController)
+  .get(getCustomerVehiclesController);
 
 // Customer vehicle by id routes
-router.route("/vehicles/:id")
-    .get(
-        customerVehicleController.getVehicleById
-    )
-    .put(
-        validateRequest(updateVehicleSchema),
-        customerVehicleController.updateVehicle
-    )
-    .delete(
-        customerVehicleController.deleteVehicle
-    );
+router
+  .route("/vehicles/:id")
+  .get(getVehicleByIdController)
+  .put(validateRequest(updateVehicleSchema), updateVehicleController)
+  .delete(deleteVehicleController);
 
-
-export default router; 
+export default router;
