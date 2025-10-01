@@ -5,6 +5,7 @@ export interface CreateWorkshopEmployeeDto {
   lastName: string;
   email?: string;
   phone?: string;
+  milage?: number;
   role: EmployeeRole;
 }
 
@@ -13,6 +14,7 @@ export interface UpdateWorkshopEmployeeDto {
   lastName?: string;
   email?: string;
   phone?: string;
+  milage?: number;
   role?: EmployeeRole;
 }
 

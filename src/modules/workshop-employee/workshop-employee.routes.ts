@@ -1,5 +1,11 @@
 import { Router } from "express";
-import { workshopEmployeeController } from "./controllers/workshop-employee.controller";
+import {
+  addEmployeeController,
+  getEmployeesController,
+  updateEmployeeController,
+  getEmployeeController,
+  setEmployeeStatusController,
+} from "./controllers/workshop-employee.controller";
 import { validateRequest } from "../../core/middleware";
 import {
   createWorkshopEmployeeSchema,
@@ -19,33 +25,29 @@ router.post(
   "/",
   authMiddleware,
   validateRequest(createWorkshopEmployeeSchema),
-  workshopEmployeeController.addEmployee,
+  addEmployeeController,
 );
 
 // Get all employees for the workshop
-router.get("/", authMiddleware, workshopEmployeeController.getEmployees);
+router.get("/", authMiddleware, getEmployeesController);
 
 // Update an employee's details
 router.put(
   "/:employeeUserId",
   authMiddleware,
   validateRequest(updateWorkshopEmployeeSchema),
-  workshopEmployeeController.updateEmployee,
+  updateEmployeeController,
 );
 
 // Get a specific employee
-router.get(
-  "/:employeeUserId",
-  authMiddleware,
-  workshopEmployeeController.getEmployee,
-);
+router.get("/:employeeUserId", authMiddleware, getEmployeeController);
 
 // Set employee active status (activate/deactivate)
 router.patch(
   "/:employeeUserId/status",
   authMiddleware,
   validateRequest(setWorkshopEmployeeStatusSchema),
-  workshopEmployeeController.setEmployeeStatus,
+  setEmployeeStatusController,
 );
 
 export default router;
