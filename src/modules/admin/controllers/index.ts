@@ -10,7 +10,7 @@ export class AdminController {
     this.adminService = new AdminService();
   }
 
-  async assignRole(req: Request, res: Response): Promise<void> {
+  assignRole(req: Request, res: Response): void {
     try {
       const params = assignRoleSchema.parse(req.body);
       // await this.adminService.assignRole(params);
@@ -22,7 +22,7 @@ export class AdminController {
     }
   }
 
-  async deleteUser(req: Request, res: Response): Promise<void> {
+  deleteUser(req: Request, res: Response): void {
     try {
       const params = deleteUserSchema.parse(req.params);
       // await this.adminService.deleteUser(params);
@@ -34,7 +34,7 @@ export class AdminController {
     }
   }
 
-  async getDashboardStats(req: Request, res: Response): Promise<void> {
+  getDashboardStats(req: Request, res: Response): void {
     try {
       // const stats = await this.adminService.getDashboardStats();
       // res.json(stats);

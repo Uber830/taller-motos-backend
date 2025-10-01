@@ -10,7 +10,7 @@ export class AdminController {
     this.adminService = new AdminService();
   }
 
-  async assignRole(req: Request, res: Response): Promise<void> {
+  assignRole(req: Request, res: Response): void {
     try {
       const params = req.body as AssignRoleParams;
       // await this.adminService.assignRole(params);
@@ -30,7 +30,7 @@ export class AdminController {
     }
   }
 
-  async getDashboardStats(req: Request, res: Response): Promise<void> {
+  getDashboardStats(req: Request, res: Response): void {
     try {
       // const stats = await this.adminService.getDashboardStats();
       // res.status(200).json(stats);
