@@ -38,6 +38,12 @@ export const createVehicleSchema = z.object({
     required_error: "Vehicle type is required",
     invalid_type_error: "Vehicle type must be either MOTORCYCLE or CAR",
   }),
+  mileage: z
+    .number()
+    .int({ message: "Mileage must be an integer" })
+    .min(0, { message: "Mileage must be at least 0" })
+    .max(1000000, { message: "Mileage must be at most 1,000,000" })
+    .optional(),
 });
 
 export const updateVehicleSchema = createVehicleSchema.partial();

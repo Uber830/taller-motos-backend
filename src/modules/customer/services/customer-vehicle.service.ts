@@ -152,11 +152,6 @@ export const createVehicle = async (
           phone: true,
         },
       },
-      _count: {
-        select: {
-          workOrders: true,
-        },
-      },
     },
   });
 
@@ -188,11 +183,6 @@ export const getCustomerVehicles = async (
           phone: true,
         },
       },
-      _count: {
-        select: {
-          workOrders: true,
-        },
-      },
     },
     orderBy: {
       createdAt: "desc",
@@ -219,11 +209,6 @@ export const getVehicleById = async (
           firstName: true,
           lastName: true,
           phone: true,
-        },
-      },
-      _count: {
-        select: {
-          workOrders: true,
         },
       },
     },
@@ -278,11 +263,6 @@ export const updateVehicle = async (
           firstName: true,
           lastName: true,
           phone: true,
-        },
-      },
-      _count: {
-        select: {
-          workOrders: true,
         },
       },
     },

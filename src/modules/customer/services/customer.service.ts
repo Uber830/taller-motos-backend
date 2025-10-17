@@ -3,7 +3,7 @@ import {
   CreateCustomerDto,
   UpdateCustomerDto,
   CustomerStats,
-  CustomerWithVehicles,
+  CustomerWithVehiclesAndWorkOrders,
 } from "../types/customer.types";
 import {
   ConflictError,
@@ -68,13 +68,13 @@ const validateCustomerAccess = async (
  * Creates a new customer for a workshop.
  * @param {string} userId - The ID of the user creating the customer.
  * @param {CreateCustomerDto} customerData - The customer data.
- * @returns {Promise<CustomerWithVehicles>} The created customer.
+ * @returns {Promise<CustomerWithVehiclesAndWorkOrders>} The created customer.
  * @throws {ConflictError} If a customer with the same phone already exists.
  */
 export const createCustomer = async (
   userId: string,
   customerData: CreateCustomerDto,
-): Promise<CustomerWithVehicles> => {
+): Promise<CustomerWithVehiclesAndWorkOrders> => {
   const workshopId = await getWorkshopIdByUserId(userId);
 
   // Check for conflicts if phone or email is being created
@@ -122,22 +122,36 @@ export const createCustomer = async (
           id: true,
           brand: true,
           model: true,
+          mileage: true,
           year: true,
           plate: true,
           color: true,
           type: true,
         },
       },
-      _count: {
+      workOrders: {
         select: {
-          vehicles: true,
-          workOrders: true,
+          id: true,
+          status: true,
+          priority: true,
+          workshopId: true,
+          customerId: true,
+          vehicleId: true,
+          serviceId: true,
+          mechanic: true,
+          description: true,
+          additionalNotes: true,
+          subtotal: true,
+          total: true,
+          startDate: true,
+          createdAt: true,
+          updatedAt: true,
         },
       },
     },
   });
 
-  return customer as CustomerWithVehicles;
+  return customer as CustomerWithVehiclesAndWorkOrders;
 };
 
 /**
@@ -148,7 +162,7 @@ export const createCustomer = async (
 export const getCustomersByWorkshop = async (
   userId: string,
 ): Promise<{
-  customers: CustomerWithVehicles[];
+  customers: CustomerWithVehiclesAndWorkOrders[];
 }> => {
   const workshopId = await getWorkshopIdByUserId(userId);
 
@@ -162,16 +176,30 @@ export const getCustomersByWorkshop = async (
           id: true,
           brand: true,
           model: true,
+          mileage: true,
           year: true,
           plate: true,
           color: true,
           type: true,
         },
       },
-      _count: {
+      workOrders: {
         select: {
-          vehicles: true,
-          workOrders: true,
+          id: true,
+          status: true,
+          priority: true,
+          workshopId: true,
+          customerId: true,
+          vehicleId: true,
+          serviceId: true,
+          mechanic: true,
+          description: true,
+          additionalNotes: true,
+          subtotal: true,
+          total: true,
+          startDate: true,
+          createdAt: true,
+          updatedAt: true,
         },
       },
     },
@@ -181,7 +209,7 @@ export const getCustomersByWorkshop = async (
   });
 
   return {
-    customers: customers as CustomerWithVehicles[],
+    customers: customers as CustomerWithVehiclesAndWorkOrders[],
   };
 };
 
@@ -192,7 +220,7 @@ export const getCustomersByWorkshop = async (
  */
 export const getCustomerById = async (
   customerId: string,
-): Promise<CustomerWithVehicles | null> => {
+): Promise<CustomerWithVehiclesAndWorkOrders | null> => {
   const customer = await prisma.customer.findUnique({
     where: { id: customerId },
     include: {
@@ -201,22 +229,36 @@ export const getCustomerById = async (
           id: true,
           brand: true,
           model: true,
+          mileage: true,
           year: true,
           plate: true,
           color: true,
           type: true,
         },
       },
-      _count: {
+      workOrders: {
         select: {
-          vehicles: true,
-          workOrders: true,
+          id: true,
+          status: true,
+          priority: true,
+          workshopId: true,
+          customerId: true,
+          vehicleId: true,
+          serviceId: true,
+          mechanic: true,
+          description: true,
+          additionalNotes: true,
+          subtotal: true,
+          total: true,
+          startDate: true,
+          createdAt: true,
+          updatedAt: true,
         },
       },
     },
   });
 
-  return customer as CustomerWithVehicles | null;
+  return customer as CustomerWithVehiclesAndWorkOrders | null;
 };
 
 /**
@@ -232,7 +274,7 @@ export const updateCustomer = async (
   customerId: string,
   userId: string,
   customerData: UpdateCustomerDto,
-): Promise<CustomerWithVehicles> => {
+): Promise<CustomerWithVehiclesAndWorkOrders> => {
   await validateCustomerAccess(customerId, userId);
 
   const workshopId = await getWorkshopIdByUserId(userId);
@@ -279,22 +321,36 @@ export const updateCustomer = async (
           id: true,
           brand: true,
           model: true,
+          mileage: true,
           year: true,
           plate: true,
           color: true,
           type: true,
         },
       },
-      _count: {
+      workOrders: {
         select: {
-          vehicles: true,
-          workOrders: true,
+          id: true,
+          status: true,
+          priority: true,
+          workshopId: true,
+          customerId: true,
+          vehicleId: true,
+          serviceId: true,
+          mechanic: true,
+          description: true,
+          additionalNotes: true,
+          subtotal: true,
+          total: true,
+          startDate: true,
+          createdAt: true,
+          updatedAt: true,
         },
       },
     },
   });
 
-  return customer as CustomerWithVehicles;
+  return customer as CustomerWithVehiclesAndWorkOrders;
 };
 
 /**
@@ -315,6 +371,19 @@ export const deleteCustomer = async (
   const customerWithWorkOrders = await prisma.customer.findUnique({
     where: { id: customerId },
     include: {
+      workOrders: {
+        select: {
+          id: true,
+          status: true,
+          priority: true,
+          workshopId: true,
+          customerId: true,
+          vehicleId: true,
+          serviceId: true,
+          mechanic: true,
+          description: true,
+        },
+      },
       _count: {
         select: {
           workOrders: true,

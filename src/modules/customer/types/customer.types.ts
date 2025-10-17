@@ -4,6 +4,9 @@ import {
   updateCustomerSchema,
 } from "../validators/customer.validator";
 import { VehicleType } from "./customer-vehicle.types";
+import { OrderStatus } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
+import { OrderPriority } from "../../work-orders/types/work-order.types";
 
 /**
  * DTOs for customer management
@@ -28,7 +31,36 @@ export interface CustomerStats {
   recentCustomers: number; // Last 30 days
 }
 
-export interface CustomerWithVehicles {
+export interface Vehicle {
+  id: string;
+  brand: string;
+  model: string;
+  year: number;
+  plate: string;
+  mileage: number;
+  color: string;
+  type: VehicleType;
+}
+
+export interface WorkOrder {
+  id: string;
+  status: OrderStatus;
+  priority: OrderPriority | null;
+  workshopId: string;
+  customerId: string;
+  vehicleId: string;
+  serviceId: string;
+  mechanic: string;
+  description: string;
+  additionalNotes: string | null;
+  subtotal: Decimal;
+  total: Decimal;
+  startDate: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CustomerWithVehiclesAndWorkOrders {
   id: string;
   firstName: string;
   lastName: string;
@@ -38,17 +70,6 @@ export interface CustomerWithVehicles {
   notes: string | null;
   createdAt: Date;
   updatedAt: Date;
-  vehicles: {
-    id: string;
-    brand: string;
-    model: string;
-    year: number;
-    plate: string;
-    color: string;
-    type: VehicleType;
-  }[];
-  _count: {
-    vehicles: number;
-    workOrders: number;
-  };
+  vehicles: Vehicle[];
+  workOrders: WorkOrder[];
 }

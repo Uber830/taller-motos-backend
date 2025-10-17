@@ -24,17 +24,17 @@ export interface VehicleWithCustomer {
   model: string;
   year: number;
   plate: string;
+  mileage: number;
   color: string;
   type: VehicleType;
   createdAt: Date;
   updatedAt: Date;
-  customer: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    phone: string;
-  };
-  _count: {
-    workOrders: number;
-  };
+  customer: CustomerWithId;
+}
+
+export interface CustomerWithId {
+  id: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
 }
