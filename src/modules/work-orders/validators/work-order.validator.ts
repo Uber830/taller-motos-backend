@@ -23,6 +23,7 @@ export const createWorkOrderSchema = z.object({
       }),
     )
     .optional(),
+  subtotal: z.number().min(0, "Subtotal must be positive"),
   total: z.number().min(0, "Total must be positive"),
 });
 
@@ -43,6 +44,7 @@ export const updateWorkOrderSchema = z.object({
   additionalNotes: z.string().max(500, "Additional notes too long").optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
   startDate: z.string().datetime().optional(),
+  subtotal: z.number().min(0, "Subtotal must be positive").optional(),
   total: z.number().min(0, "Total must be positive").optional(),
 });
 

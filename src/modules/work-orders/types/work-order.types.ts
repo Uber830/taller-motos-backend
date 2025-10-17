@@ -24,6 +24,7 @@ export interface CreateWorkOrderDto {
   description: string;
   additionalNotes?: string;
   supplies?: Array<{ supplyId: string; quantity: number }>;
+  subtotal: number;
   total: number;
 }
 
@@ -34,6 +35,7 @@ export interface UpdateWorkOrderDto {
   additionalNotes?: string;
   priority?: OrderPriority;
   startDate?: string;
+  subtotal?: number;
   total?: number;
 }
 
@@ -48,6 +50,7 @@ export interface WorkOrder {
   description: string;
   additionalNotes: string | null;
   cost: Decimal;
+  subtotal: Decimal;
   total: Decimal;
   createdAt: Date;
   updatedAt: Date;
@@ -61,6 +64,7 @@ export interface WorkOrder {
     id: string;
     brand: string;
     model: string;
+    mileage: number;
     year: number;
     plate: string;
     color: string;

@@ -83,6 +83,7 @@ export const createWorkOrder = async (
       additionalNotes: data.additionalNotes,
       priority: (data.priority ?? "MEDIUM") as OrderPriority,
       startDate: data.startDate ? new Date(data.startDate) : new Date(),
+      subtotal: new Decimal(data.subtotal),
       total: new Decimal(data.total),
     };
 
@@ -102,6 +103,7 @@ export const createWorkOrder = async (
             id: true,
             brand: true,
             model: true,
+            mileage: true,
             year: true,
             plate: true,
             color: true,
@@ -155,6 +157,7 @@ export const createWorkOrder = async (
             select: {
               id: true,
               brand: true,
+              mileage: true,
               model: true,
               year: true,
               plate: true,
@@ -213,6 +216,7 @@ export const getWorkOrders = async (workshopId: string) => {
             id: true,
             brand: true,
             model: true,
+            mileage: true,
             year: true,
             plate: true,
             color: true,
@@ -267,6 +271,7 @@ export const getWorkOrderById = async (
           select: {
             id: true,
             brand: true,
+            mileage: true,
             model: true,
             year: true,
             plate: true,
@@ -330,6 +335,7 @@ export const updateWorkOrder = async (
       status?: OrderStatus;
       priority?: OrderPriority;
       startDate?: Date;
+      subtotal?: Decimal;
       total?: Decimal;
     } = {};
 
@@ -351,6 +357,9 @@ export const updateWorkOrder = async (
     if (data.startDate !== undefined) {
       updateData.startDate = new Date(data.startDate);
     }
+    if (data.subtotal !== undefined) {
+      updateData.subtotal = new Decimal(data.subtotal);
+    }
     if (data.total !== undefined) {
       updateData.total = new Decimal(data.total);
     }
@@ -371,6 +380,7 @@ export const updateWorkOrder = async (
           select: {
             id: true,
             brand: true,
+            mileage: true,
             model: true,
             year: true,
             plate: true,
