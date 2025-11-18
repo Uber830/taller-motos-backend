@@ -49,7 +49,6 @@ export interface WorkOrder {
   mechanic: string;
   description: string;
   additionalNotes: string | null;
-  cost: Decimal;
   subtotal: Decimal;
   total: Decimal;
   createdAt: Date;
