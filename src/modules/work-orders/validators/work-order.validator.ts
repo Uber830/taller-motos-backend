@@ -1,5 +1,15 @@
 import { z } from "zod";
 
+const supplySchema = z.object({
+  supplyId: z.string().uuid("Supply ID must be a valid UUID"),
+  quantity: z
+    .number()
+    .int("Quantity must be an integer")
+    .min(1, "Quantity must be at least 1")
+    .max(50, "Quantity must be less than 50")
+    .positive("Quantity must be positive"),
+});
+
 export const createWorkOrderSchema = z.object({
   customerId: z.string().min(1, "Customer ID is required"),
   vehicleId: z.string().min(1, "Vehicle ID is required"),
@@ -15,14 +25,7 @@ export const createWorkOrderSchema = z.object({
     .min(1, "Description is required")
     .max(1000, "Description too long"),
   additionalNotes: z.string().max(500, "Additional notes too long").optional(),
-  supplies: z
-    .array(
-      z.object({
-        supplyId: z.string().min(1, "Supply ID is required"),
-        quantity: z.number().int().min(1, "Quantity must be at least 1"),
-      }),
-    )
-    .optional(),
+  supplies: z.array(supplySchema).optional(),
   subtotal: z.number().min(0, "Subtotal must be positive"),
   total: z.number().min(0, "Total must be positive"),
 });
@@ -44,6 +47,7 @@ export const updateWorkOrderSchema = z.object({
   additionalNotes: z.string().max(500, "Additional notes too long").optional(),
   priority: z.enum(["LOW", "MEDIUM", "HIGH", "URGENT"]).optional(),
   startDate: z.string().datetime().optional(),
+  supplies: z.array(supplySchema).optional(),
   subtotal: z.number().min(0, "Subtotal must be positive").optional(),
   total: z.number().min(0, "Total must be positive").optional(),
 });
