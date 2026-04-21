@@ -10,12 +10,12 @@ import { logger } from "../logger";
  */
 export const validateFormData =
   (schema: ZodTypeAny) =>
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (req: Request, _res: Response, next: NextFunction) => {
     try {
       // For multipart/form-data, the body contains the form fields
       await schema.parseAsync(req.body);
       next();
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof ZodError) {
         next(error);
       } else {

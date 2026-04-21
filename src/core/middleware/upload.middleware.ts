@@ -95,7 +95,7 @@ export const uploadSingle = (
  */
 export const validateFileUpload = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction,
 ): void => {
   if (!req.file) {
