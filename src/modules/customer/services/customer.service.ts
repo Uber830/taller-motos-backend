@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../../core/db/prisma";
 import {
   CreateCustomerDto,
   UpdateCustomerDto,
@@ -17,8 +17,6 @@ import {
  * @module customer/service
  * @category Services
  */
-
-const prisma = new PrismaClient();
 
 /**
  * Gets the workshop ID for a given user ID.

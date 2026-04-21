@@ -1,4 +1,5 @@
-import { PrismaClient, EmployeeRole } from "@prisma/client";
+import { EmployeeRole } from "@prisma/client";
+import { prisma } from "../../../core/db/prisma";
 import {
   CreateWorkshopDto,
   UpdateWorkshopDto,
@@ -14,8 +15,6 @@ import {
  * @module workshop/service
  * @category Services
  */
-
-const prisma = new PrismaClient();
 
 /**
  * Creates a new workshop for a given user.

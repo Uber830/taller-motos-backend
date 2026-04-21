@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
@@ -15,8 +15,7 @@ import {
   User,
 } from "../types/index";
 import { SessionNetwork } from "../types/index";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../../core/db/prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET ?? "your-secret-key";
 const JWT_EXPIRES_IN = "2h";

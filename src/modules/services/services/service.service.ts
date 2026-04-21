@@ -1,12 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../../core/db/prisma";
 import {
   InternalServerError,
   NotFoundError,
   BadRequestError,
 } from "../../../core/errors";
 import { CreateServiceDto, UpdateServiceDto } from "../types/service.types";
-
-const prisma = new PrismaClient();
 
 export const createService = async (
   workshopId: string,

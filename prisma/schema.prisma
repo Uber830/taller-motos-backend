@@ -43,6 +43,8 @@ model Workshop {
   supplies   Supply[]
   workOrders WorkOrder[]
   employees  WorkshopEmployeeInfo[] @relation("WorkshopInternalEmployees")
+  whatsAppSessions     WhatsAppSession[]
+  whatsAppAppointments WhatsAppAppointment[]
   owner      User                   @relation("WorkshopOwner", fields: [ownerId], references: [id])
 
   @@map("workshops")
@@ -175,6 +177,42 @@ model WorkshopEmployeeInfo {
   workshop   Workshop     @relation("WorkshopInternalEmployees", fields: [workshopId], references: [id])
 
   @@map("workshop_employee_info")
+}
+
+model WhatsAppSession {
+  id            String    @id @default(cuid())
+  phone         String
+  workshopId    String
+  step          String    @default("menu")
+  data          Json?
+  version       Int       @default(0)
+  lastMessageAt DateTime  @default(now())
+  completedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  workshop      Workshop  @relation(fields: [workshopId], references: [id])
+
+  @@index([phone])
+  @@index([workshopId])
+  @@index([completedAt])
+  @@map("whatsapp_sessions")
+}
+
+model WhatsAppAppointment {
+  id              String   @id @default(cuid())
+  workshopId       String
+  phone            String
+  customerName     String
+  vehicleText      String
+  desiredDateTime  String
+  createdAt        DateTime @default(now())
+
+  workshop         Workshop @relation(fields: [workshopId], references: [id])
+
+  @@index([workshopId])
+  @@index([phone])
+  @@map("whatsapp_appointments")
 }
 
 enum EmployeeRole {

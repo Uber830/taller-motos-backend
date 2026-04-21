@@ -15,6 +15,7 @@ import { serviceRoutes } from "./modules/services";
 import { workOrderRoutes } from "./modules/work-orders";
 import { supplyRoutes } from "./modules/supplies";
 import customerRoutes from "./modules/customer/customer.routes";
+import { whatsappWebhookRoutes } from "./modules/whatsapp-bot";
 
 const app = express();
 app.use(express.json());
@@ -29,6 +30,7 @@ app.use(
 // Routes without authentication required
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/webhook/whatsapp", whatsappWebhookRoutes);
 
 app.use("/api", authMiddleware);
 

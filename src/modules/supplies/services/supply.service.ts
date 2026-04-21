@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../../core/db/prisma";
 import { Decimal } from "@prisma/client/runtime/library";
 import {
   InternalServerError,
@@ -6,8 +6,6 @@ import {
   BadRequestError,
 } from "../../../core/errors";
 import { CreateSupplyDto, UpdateSupplyDto } from "../types/supply.types";
-
-const prisma = new PrismaClient();
 
 export const createSupply = async (
   workshopId: string,

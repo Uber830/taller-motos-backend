@@ -1,9 +1,7 @@
 import { Response, NextFunction } from "express";
-import { PrismaClient } from "@prisma/client";
 import { AuthenticatedRequest } from "../../auth/middleware/auth";
 import { UserRole } from "../../user/types/user.types";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../../core/db/prisma";
 
 /**
  * Middleware to determine workshop access for the authenticated user

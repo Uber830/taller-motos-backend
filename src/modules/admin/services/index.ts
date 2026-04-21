@@ -1,9 +1,7 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../../../core/db/prisma";
 
 // import { AdminAction, AdminDashboardStats } from "../types";
 import { DeleteUserParams } from "../validators";
-
-const prisma = new PrismaClient();
 
 export class AdminService {
   // async assignRole(params: AssignRoleParams): Promise<void> {

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const supplySchema = z.object({
-  supplyId: z.string().uuid("Supply ID must be a valid UUID"),
+  supplyId: z.string().cuid("Supply ID must be a valid CUID"),
   quantity: z
     .number()
     .int("Quantity must be an integer")

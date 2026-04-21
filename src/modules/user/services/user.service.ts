@@ -1,8 +1,7 @@
-import { PrismaClient, User } from "@prisma/client";
+import type { User } from "@prisma/client";
 import { InternalServerError } from "../../../core/errors";
 import { UpdateUserDto } from "../types/user.types";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../../core/db/prisma";
 
 /**
  * Updates a user by ID

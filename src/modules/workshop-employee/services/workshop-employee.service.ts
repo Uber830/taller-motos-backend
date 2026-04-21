@@ -1,8 +1,4 @@
-import {
-  PrismaClient,
-  WorkshopEmployeeInfo,
-  EmployeeRole,
-} from "@prisma/client";
+import { EmployeeRole, WorkshopEmployeeInfo } from "@prisma/client";
 import {
   CreateWorkshopEmployeeDto,
   UpdateWorkshopEmployeeDto,
@@ -12,8 +8,7 @@ import {
   ForbiddenError,
   ConflictError,
 } from "../../../core/errors";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../../core/db/prisma";
 
 /**
  * Service for managing workshop employees (WorkshopUser entities).

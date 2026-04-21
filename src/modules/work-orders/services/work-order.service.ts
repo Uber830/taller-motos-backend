@@ -1,4 +1,4 @@
-import { PrismaClient, OrderPriority, OrderStatus } from "@prisma/client";
+import { OrderPriority, OrderStatus } from "@prisma/client";
 import type { Prisma } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import {
@@ -11,8 +11,9 @@ import {
   UpdateWorkOrderDto,
 } from "../types/work-order.types";
 import { logger } from "../../../core/logger";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../../core/db/prisma";
+import { botMessages } from "../../whatsapp-bot/bot/bot.messages";
+import { sendTextMessage } from "../../whatsapp-bot/services/whatsapp-cloud.service";
 
 export const createWorkOrder = async (
   workshopId: string,
@@ -406,6 +407,23 @@ export const updateWorkOrder = async (
         },
       },
     });
+
+    // If the status was updated to completed, send the final message to the customer.
+    const statusWasUpdatedToCompleted =
+      data.status !== undefined &&
+      (data.status as OrderStatus) === OrderStatus.COMPLETED &&
+      existingWorkOrder.status !== OrderStatus.COMPLETED;
+
+    if (statusWasUpdatedToCompleted) {
+      const fullName =
+        `${updatedWorkOrder.customer.firstName} ${updatedWorkOrder.customer.lastName}`.trim();
+      const vehicleText =
+        `${updatedWorkOrder.vehicle.brand} ${updatedWorkOrder.vehicle.model}`.trim();
+      await sendTextMessage({
+        to: updatedWorkOrder.customer.phone,
+        body: botMessages.ordenFinalizada(fullName, vehicleText),
+      });
+    }
 
     return updatedWorkOrder;
   } catch (error) {
